@@ -5,12 +5,14 @@ import {
   FileText,
   GraduationCap,
   LayoutDashboard,
+  LogOut,
   ScanLine,
   Settings,
   UsersRound,
   X,
 } from 'lucide-react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../stores/authStore'
 
 interface SidebarProps {
   open: boolean
@@ -20,7 +22,7 @@ interface SidebarProps {
 }
 
 const primaryLinks = [
-  { label: 'Overview', icon: LayoutDashboard, to: '/' },
+  { label: 'Overview', icon: LayoutDashboard, to: '/dashboard' },
   { label: 'Students', icon: UsersRound, to: '/students' },
   { label: 'Live Scanning', icon: ScanLine, to: '/scanning' },
   { label: 'Attendance', icon: CalendarDays, to: '/attendance' },
@@ -28,6 +30,15 @@ const primaryLinks = [
 ]
 
 export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProps) {
+  const navigate = useNavigate()
+  const logout = useAuthStore((state) => state.logout)
+
+  const handleLogout = () => {
+    logout()
+    onClose()
+    navigate('/login', { replace: true })
+  }
+
   return (
     <>
       <button
@@ -41,7 +52,7 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
         } ${compact ? 'lg:w-20' : 'lg:w-64'} w-64`}
       >
         <div className="flex h-11 items-center justify-between px-2">
-          <NavLink to="/" className="flex items-center gap-3 overflow-hidden" aria-label="Attendly dashboard">
+          <NavLink to="/dashboard" className="flex items-center gap-3 overflow-hidden" aria-label="Attendly dashboard">
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
               <GraduationCap size={21} strokeWidth={2.3} />
             </span>
@@ -81,6 +92,10 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
             <Settings size={19} className="shrink-0" />
             <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>Settings</span>
           </NavLink>
+          <button onClick={handleLogout} title={compact ? 'Log out' : undefined} className={`flex h-11 w-full items-center rounded-xl px-3 text-sm font-medium text-rose-600 transition hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
+            <LogOut size={19} className="shrink-0" />
+            <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>Log out</span>
+          </button>
           <button onClick={onCompactChange} className="hidden h-10 w-full items-center rounded-xl px-3 text-sm font-medium text-slate-400 transition hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-900 dark:hover:text-white lg:flex">
             <ChevronLeft size={18} className={`shrink-0 transition-transform ${compact ? 'rotate-180' : ''}`} />
             <span className={`ml-3 whitespace-nowrap ${compact ? 'hidden' : ''}`}>Collapse menu</span>

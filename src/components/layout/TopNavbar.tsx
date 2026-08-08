@@ -1,4 +1,5 @@
 import { Bell, ChevronDown, Menu, Moon, Search, Sun } from 'lucide-react'
+import { useAuthStore } from '../../stores/authStore'
 
 interface TopNavbarProps {
   onMenu: () => void
@@ -7,6 +8,9 @@ interface TopNavbarProps {
 }
 
 export function TopNavbar({ onMenu, isDark, onThemeToggle }: TopNavbarProps) {
+  const user = useAuthStore((state) => state.user)
+  const initials = user?.name.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase() ?? 'AD'
+
   return (
     <header className="sticky top-0 z-20 flex h-[72px] items-center justify-between border-b border-slate-200/75 bg-slate-50/80 px-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/80 sm:px-6 lg:px-8">
       <div className="flex items-center gap-3">
@@ -28,8 +32,8 @@ export function TopNavbar({ onMenu, isDark, onThemeToggle }: TopNavbarProps) {
           <span className="absolute right-2.5 top-2 size-2 rounded-full bg-rose-500 ring-2 ring-slate-50 dark:ring-slate-950" />
         </button>
         <button className="ml-1 flex items-center gap-2 rounded-xl py-1 pl-1 pr-2 transition hover:bg-white hover:shadow-sm dark:hover:bg-slate-900" aria-label="Open profile menu">
-          <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-xs font-bold text-white">AM</span>
-          <span className="hidden text-left sm:block"><span className="block text-xs font-semibold text-slate-800 dark:text-slate-100">Alex Morgan</span><span className="block text-[11px] text-slate-400">Administrator</span></span>
+          <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-xs font-bold text-white">{initials}</span>
+          <span className="hidden text-left sm:block"><span className="block text-xs font-semibold text-slate-800 dark:text-slate-100">{user?.name ?? 'Administrator'}</span><span className="block text-[11px] text-slate-400">{user?.role ?? 'Administrator'}</span></span>
           <ChevronDown size={15} className="hidden text-slate-400 sm:block" />
         </button>
       </div>
