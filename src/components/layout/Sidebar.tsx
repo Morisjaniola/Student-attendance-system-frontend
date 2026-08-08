@@ -6,6 +6,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   LogOut,
+  QrCode,
   ScanLine,
   Settings,
   UsersRound,
@@ -24,6 +25,7 @@ interface SidebarProps {
 const primaryLinks = [
   { label: 'Overview', icon: LayoutDashboard, to: '/dashboard' },
   { label: 'Students', icon: UsersRound, to: '/students' },
+  { label: 'QR Codes', icon: QrCode, to: '/qr-codes' },
   { label: 'Live Scanning', icon: ScanLine, to: '/scanning' },
   { label: 'Attendance', icon: CalendarDays, to: '/attendance' },
   { label: 'Reports', icon: BarChart3, to: '/reports' },

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { UserCheck, UserRound, UserRoundX, UsersRound, VenusAndMars } from 'lucide-react'
+import { UserCheck, UserRound, UserRoundX, UsersRound, Venus } from 'lucide-react'
 import type { Student } from '../../types/student'
 
 const cardData = (students: Student[]) => [
@@ -7,7 +7,7 @@ const cardData = (students: Student[]) => [
   { label: 'Active students', value: students.filter((student) => student.status === 'Active').length, note: 'Eligible for attendance', icon: UserCheck, tint: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-300' },
   { label: 'Inactive students', value: students.filter((student) => student.status === 'Inactive').length, note: 'Temporarily inactive', icon: UserRoundX, tint: 'text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300' },
   { label: 'Male students', value: students.filter((student) => student.gender === 'Male').length, note: 'Registered male students', icon: UserRound, tint: 'text-violet-600 bg-violet-50 dark:bg-violet-500/10 dark:text-violet-300' },
-  { label: 'Female students', value: students.filter((student) => student.gender === 'Female').length, note: 'Registered female students', icon: VenusAndMars, tint: 'text-rose-600 bg-rose-50 dark:bg-rose-500/10 dark:text-rose-300' },
+  { label: 'Female students', value: students.filter((student) => student.gender === 'Female').length, note: 'Registered female students', icon: Venus, tint: 'text-rose-600 bg-rose-50 dark:bg-rose-500/10 dark:text-rose-300' },
 ]
 
 export function StatisticsCards({ students }: { students: Student[] }) {

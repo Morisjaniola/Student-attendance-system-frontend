@@ -20,7 +20,7 @@ export function LoginPage() {
   const requestedPath = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname
   const destination = requestedPath && requestedPath !== '/login' ? requestedPath : '/dashboard'
 
-  if (isAuthenticated && user?.role === 'Administrator') return <Navigate to="/dashboard" replace />
+  if (isAuthenticated && user?.role === 'Administrator') return <Navigate to={destination} replace />
 
   const validate = (): FieldErrors => {
     const nextErrors: FieldErrors = {}
@@ -138,6 +138,12 @@ export function LoginPage() {
               {isLoading ? 'Signing in…' : 'Login'}
             </button>
           </form>
+
+          <div className="mt-7 rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-3.5 dark:border-slate-700 dark:bg-slate-950/50">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Demo access</p>
+            <p className="mt-1.5 font-mono text-xs leading-5 text-slate-600 dark:text-slate-300">admin@attendance.com <span className="mx-1 text-slate-400">·</span> admin123</p>
+            <p className="mt-1 text-[11px] leading-4 text-slate-400">Use the sample administrator account above to explore the dashboard.</p>
+          </div>
         </div>
       </section>
     </main>

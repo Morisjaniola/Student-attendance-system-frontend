@@ -17,8 +17,13 @@ export const authService = {
   async login({ identifier, password }: LoginCredentials): Promise<AuthUser> {
     await delay()
 
+    const normalizedIdentifier = identifier.trim().toLowerCase()
+    // Accepts the email, the short username (admin), or the display name so the
+    // "Username or Email" field behaves as its label promises.
     const isValidAdministrator =
-      identifier.trim().toLowerCase() === developmentAdministrator.user.email &&
+      (normalizedIdentifier === developmentAdministrator.user.email ||
+        normalizedIdentifier === 'admin' ||
+        normalizedIdentifier === developmentAdministrator.user.name.toLowerCase()) &&
       password === developmentAdministrator.password
 
     if (!isValidAdministrator) {
