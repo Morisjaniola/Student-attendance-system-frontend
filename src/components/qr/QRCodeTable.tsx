@@ -31,7 +31,7 @@ export function QRCodeTable({ students, onGenerate, onView, onPrint, onRegenerat
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1180px] text-left">
+        <table className="w-full min-w-295 text-left">
           <thead className="bg-slate-50/70 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:bg-slate-950/50">
             <tr>
               <th className="px-5 py-3">Student</th>

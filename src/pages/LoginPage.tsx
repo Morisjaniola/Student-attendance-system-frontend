@@ -55,7 +55,7 @@ export function LoginPage() {
       <div className="absolute -bottom-32 -right-20 size-96 rounded-full bg-sky-100/80 blur-3xl" aria-hidden="true" />
 
       <section className="relative z-10 mx-auto grid w-full max-w-5xl overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-2xl shadow-slate-900/10 lg:grid-cols-[1.05fr_.95fr]">
-        <div className="hidden flex-col justify-between bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 p-10 text-white lg:flex">
+        <div className="hidden flex-col justify-between bg-linear-to-br from-blue-700 via-blue-600 to-indigo-700 p-10 text-white lg:flex">
           <div>
             <div className="grid size-14 place-items-center rounded-2xl bg-white/15 ring-1 ring-white/25">
               <GraduationCap size={31} aria-hidden="true" />

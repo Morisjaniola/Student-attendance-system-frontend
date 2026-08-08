@@ -86,7 +86,7 @@ export function QRCodePrint({ student, onReady, onPrinted }: QRCodePrintProps) {
             </div>
 
             <div className="rounded-xl border border-slate-300 bg-white p-3 text-center">
-              {dataUrl ? <img src={dataUrl} alt={`QR code for ${student.name}`} width={168} height={168} /> : <span className="block size-[168px] bg-slate-50" />}
+              {dataUrl ? <img src={dataUrl} alt={`QR code for ${student.name}`} width={168} height={168} /> : <span className="block size-42 bg-slate-50" />}
               <p className="mt-1.5 font-mono text-[10px] text-slate-500">{student.qrValue}</p>
             </div>
           </div>
