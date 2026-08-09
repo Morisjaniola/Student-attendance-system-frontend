@@ -115,9 +115,9 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
             <FileText size={19} className="shrink-0" />
             <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>Attendance Records</span>
           </NavLink>
-          <NavLink to="/settings" title={compact ? 'Settings' : undefined} className={`flex h-11 items-center rounded-xl px-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
+          <NavLink to="/settings" title={compact ? 'System Settings' : undefined} className={`flex h-11 items-center rounded-xl px-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
             <Settings size={19} className="shrink-0" />
-            <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>Settings</span>
+            <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>System Settings</span>
           </NavLink>
           <button onClick={handleLogout} title={compact ? 'Log out' : undefined} className={`flex h-11 w-full items-center rounded-xl px-3 text-sm font-medium text-rose-600 transition hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
             <LogOut size={19} className="shrink-0" />
