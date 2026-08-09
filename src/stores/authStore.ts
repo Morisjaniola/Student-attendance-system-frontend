@@ -3,6 +3,7 @@ import { authService } from '../services/authService'
 import type { AuthUser, LoginCredentials } from '../types/auth'
 
 const AUTH_STORAGE_KEY = 'attendance_auth'
+const AUTH_STORAGE_KEYS = [AUTH_STORAGE_KEY]
 
 interface StoredAuthSession {
   user: AuthUser
@@ -37,6 +38,15 @@ function readStoredSession(): AuthUser | null {
 
 const storedUser = readStoredSession()
 
+function clearAuthenticationStorage() {
+  if (typeof window === 'undefined') return
+  // Keep settings, theme, language, and all unrelated application data intact.
+  AUTH_STORAGE_KEYS.forEach((key) => {
+    window.localStorage.removeItem(key)
+    window.sessionStorage.removeItem(key)
+  })
+}
+
 export const useAuthStore = create<AuthStore>((set) => ({
   isAuthenticated: Boolean(storedUser),
   user: storedUser,
@@ -53,7 +63,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     return user
   },
   logout: () => {
-    window.localStorage.removeItem(AUTH_STORAGE_KEY)
+    clearAuthenticationStorage()
     set({ isAuthenticated: false, user: null })
   },
 }))

@@ -19,13 +19,14 @@ import {
   X,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useNotificationsUnreadCount } from '../../hooks/useNotificationsUnreadCount'
 import { useAuthStore } from '../../stores/authStore'
 import { hasPermission } from '../../services/roleService'
 import { useRoleStore } from '../../stores/roleStore'
 import type { SystemModule } from '../../types/role'
+import { ConfirmationModal } from '../dialogs/ConfirmationModal'
 
 interface SidebarProps {
   open: boolean
@@ -61,9 +62,11 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
     canViewAttendanceRecords: hasPermission(currentUser?.role, 'Attendance Records', 'View'),
     canViewSettings: hasPermission(currentUser?.role, 'System Settings', 'View'),
   }), [currentUser?.role, permissionRevision])
+  const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState(false)
 
-  const handleLogout = () => {
+  const confirmLogout = () => {
     logout()
+    setLogoutConfirmationOpen(false)
     onClose()
     navigate('/login', { replace: true })
   }
@@ -135,7 +138,7 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
             <Settings size={19} className="shrink-0" />
             <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>System Settings</span>
           </NavLink>}
-          <button onClick={handleLogout} title={compact ? 'Log out' : undefined} className={`flex h-11 w-full items-center rounded-xl px-3 text-sm font-medium text-rose-600 transition hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
+          <button onClick={() => setLogoutConfirmationOpen(true)} title={compact ? 'Log out' : undefined} className={`flex h-11 w-full items-center rounded-xl px-3 text-sm font-medium text-rose-600 transition hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
             <LogOut size={19} className="shrink-0" />
             <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>Log out</span>
           </button>
@@ -145,6 +148,7 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
           </button>
         </div>
       </aside>
+      <ConfirmationModal open={logoutConfirmationOpen} title="Logout" description="Are you sure you want to logout?" confirmLabel="Logout" tone="danger" onConfirm={confirmLogout} onCancel={() => setLogoutConfirmationOpen(false)} />
     </>
   )
 }
