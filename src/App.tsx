@@ -7,6 +7,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { QRCodeManagementPage } from './pages/QRCodeManagementPage'
 import { RFIDManagementPage } from './pages/RFIDManagementPage'
+import { AnalyticsPage } from './pages/AnalyticsPage'
 import { StudentManagementPage } from './pages/StudentManagementPage'
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
       <Route path="/rfid" element={<ProtectedRoute><DashboardLayout><RFIDManagementPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/attendance-monitoring" element={<ProtectedRoute><DashboardLayout><AttendanceMonitoringPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/attendance-records" element={<ProtectedRoute><DashboardLayout><AttendanceRecordsPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/analytics" element={<ProtectedRoute><DashboardLayout><AnalyticsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )

@@ -11,6 +11,7 @@ import {
   QrCode,
   ScanLine,
   Settings,
+  PieChart,
   UsersRound,
   X,
 } from 'lucide-react'
@@ -33,6 +34,7 @@ const primaryLinks = [
   { label: 'Live Scanning', icon: ScanLine, to: '/scanning' },
   { label: 'Attendance', icon: CalendarDays, to: '/attendance' },
   { label: 'Reports', icon: BarChart3, to: '/reports' },
+  { label: 'Analytics', icon: PieChart, to: '/analytics' },
 ]
 
 export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProps) {
