@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  Bell,
   CalendarDays,
   ChevronLeft,
   ClipboardCheck,
@@ -16,6 +17,7 @@ import {
   X,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useNotificationsUnreadCount } from '../../hooks/useNotificationsUnreadCount'
 import { useAuthStore } from '../../stores/authStore'
 
 interface SidebarProps {
@@ -35,11 +37,13 @@ const primaryLinks = [
   { label: 'Attendance', icon: CalendarDays, to: '/attendance' },
   { label: 'Reports', icon: BarChart3, to: '/reports' },
   { label: 'Analytics', icon: PieChart, to: '/analytics' },
+  { label: 'Notifications', icon: Bell, to: '/notifications' },
 ]
 
 export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProps) {
   const navigate = useNavigate()
   const logout = useAuthStore((state) => state.logout)
+  const unreadCount = useNotificationsUnreadCount()
 
   const handleLogout = () => {
     logout()
@@ -87,6 +91,11 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
             >
               <Icon size={19} strokeWidth={2} className="shrink-0" />
               <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>{label}</span>
+              {to === '/notifications' && unreadCount > 0 && (
+                <span className={`ml-auto grid size-5 place-items-center rounded-full bg-rose-500 text-[10px] font-bold text-white ${compact ? 'lg:hidden' : ''}`} aria-label={`${unreadCount} unread notifications`}>
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </NavLink>
           ))}
         </nav>
