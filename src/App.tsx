@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { DashboardLayout } from './components/layout/DashboardLayout'
+import { AttendanceMonitoringPage } from './pages/AttendanceMonitoringPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { QRCodeManagementPage } from './pages/QRCodeManagementPage'
@@ -16,6 +17,7 @@ function App() {
       <Route path="/students" element={<ProtectedRoute><DashboardLayout><StudentManagementPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/qr-codes" element={<ProtectedRoute><DashboardLayout><QRCodeManagementPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/rfid" element={<ProtectedRoute><DashboardLayout><RFIDManagementPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/attendance-monitoring" element={<ProtectedRoute><DashboardLayout><AttendanceMonitoringPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
