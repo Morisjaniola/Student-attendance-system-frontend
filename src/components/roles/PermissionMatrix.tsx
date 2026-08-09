@@ -1,0 +1,11 @@
+import { Check } from 'lucide-react'
+import { MODULE_ACTIONS, SYSTEM_MODULES } from '../../types/role'
+import type { Permission, PermissionAction } from '../../types/role'
+
+interface PermissionMatrixProps { permissions: Permission[]; onChange: (permissions: Permission[]) => void }
+
+export function PermissionMatrix({ permissions, onChange }: PermissionMatrixProps) {
+  const has = (module: Permission['module'], action: PermissionAction) => permissions.some((permission) => permission.module === module && permission.action === action)
+  const toggle = (module: Permission['module'], action: PermissionAction) => onChange(has(module, action) ? permissions.filter((permission) => permission.module !== module || permission.action !== action) : [...permissions, { module, action }])
+  return <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700"><table className="w-full min-w-145 text-left"><thead className="bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:bg-slate-950/60"><tr><th className="px-3 py-3">Module</th>{(['View', 'Create', 'Update', 'Delete'] as PermissionAction[]).map((action) => <th key={action} className="w-20 px-2 py-3 text-center">{action}</th>)}</tr></thead><tbody className="divide-y divide-slate-100 dark:divide-slate-800">{SYSTEM_MODULES.map((module) => <tr key={module}><td className="px-3 py-3 text-xs font-semibold text-slate-700 dark:text-slate-200">{module}</td>{(['View', 'Create', 'Update', 'Delete'] as PermissionAction[]).map((action) => { const available = MODULE_ACTIONS[module].includes(action); const checked = has(module, action); return <td key={action} className="px-2 py-3 text-center">{available ? <button type="button" role="checkbox" aria-checked={checked} aria-label={`${action} permission for ${module}`} onClick={() => toggle(module, action)} className={`grid size-6 place-items-center rounded-md border transition focus:outline-none focus:ring-4 focus:ring-blue-600/20 ${checked ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300 bg-white text-transparent hover:border-blue-400 dark:border-slate-600 dark:bg-slate-950'}`}><Check size={14} /></button> : <span className="text-slate-200 dark:text-slate-700">—</span>}</td> })}</tr>)}</tbody></table></div>
+}

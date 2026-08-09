@@ -13,13 +13,19 @@ import {
   QrCode,
   ScanLine,
   Settings,
+  ShieldCheck,
   PieChart,
   UsersRound,
   X,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { useMemo } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useNotificationsUnreadCount } from '../../hooks/useNotificationsUnreadCount'
 import { useAuthStore } from '../../stores/authStore'
+import { hasPermission } from '../../services/roleService'
+import { useRoleStore } from '../../stores/roleStore'
+import type { SystemModule } from '../../types/role'
 
 interface SidebarProps {
   open: boolean
@@ -28,25 +34,33 @@ interface SidebarProps {
   onCompactChange: () => void
 }
 
-const primaryLinks = [
-  { label: 'Overview', icon: LayoutDashboard, to: '/dashboard' },
-  { label: 'Students', icon: UsersRound, to: '/students' },
-  { label: 'QR Codes', icon: QrCode, to: '/qr-codes' },
-  { label: 'RFID Management', icon: Contact, to: '/rfid' },
-  { label: 'Attendance Monitoring', icon: ClipboardCheck, to: '/attendance-monitoring' },
-  { label: 'Live Scanning', icon: ScanLine, to: '/scanning' },
-  { label: 'Attendance', icon: CalendarDays, to: '/attendance' },
-  { label: 'Reports', icon: BarChart3, to: '/reports' },
-  { label: 'Analytics', icon: PieChart, to: '/analytics' },
-  { label: 'Notifications', icon: Bell, to: '/notifications' },
-  { label: 'User Management', icon: UsersRound, to: '/users' },
-  { label: 'Audit Logs', icon: ClipboardList, to: '/audit-logs' },
+const primaryLinks: { label: string; icon: LucideIcon; to: string; module: SystemModule }[] = [
+  { label: 'Overview', icon: LayoutDashboard, to: '/dashboard', module: 'Dashboard' },
+  { label: 'Students', icon: UsersRound, to: '/students', module: 'Student Management' },
+  { label: 'QR Codes', icon: QrCode, to: '/qr-codes', module: 'QR Code Management' },
+  { label: 'RFID Management', icon: Contact, to: '/rfid', module: 'RFID Management' },
+  { label: 'Attendance Monitoring', icon: ClipboardCheck, to: '/attendance-monitoring', module: 'Attendance Monitoring' },
+  { label: 'Live Scanning', icon: ScanLine, to: '/scanning', module: 'Attendance Monitoring' },
+  { label: 'Attendance', icon: CalendarDays, to: '/attendance', module: 'Attendance Records' },
+  { label: 'Reports', icon: BarChart3, to: '/reports', module: 'Analytics' },
+  { label: 'Analytics', icon: PieChart, to: '/analytics', module: 'Analytics' },
+  { label: 'Notifications', icon: Bell, to: '/notifications', module: 'Notifications' },
+  { label: 'User Management', icon: UsersRound, to: '/users', module: 'User Management' },
+  { label: 'Audit Logs', icon: ClipboardList, to: '/audit-logs', module: 'Audit Logs' },
+  { label: 'Roles & Permissions', icon: ShieldCheck, to: '/roles-permissions', module: 'Roles & Permissions' },
 ]
 
 export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProps) {
   const navigate = useNavigate()
   const logout = useAuthStore((state) => state.logout)
+  const currentUser = useAuthStore((state) => state.user)
   const unreadCount = useNotificationsUnreadCount()
+  const permissionRevision = useRoleStore((state) => state.permissionRevision)
+  const { visiblePrimaryLinks, canViewAttendanceRecords, canViewSettings } = useMemo(() => ({
+    visiblePrimaryLinks: primaryLinks.filter((link) => hasPermission(currentUser?.role, link.module, 'View')),
+    canViewAttendanceRecords: hasPermission(currentUser?.role, 'Attendance Records', 'View'),
+    canViewSettings: hasPermission(currentUser?.role, 'System Settings', 'View'),
+  }), [currentUser?.role, permissionRevision])
 
   const handleLogout = () => {
     logout()
@@ -80,7 +94,7 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
 
         {!compact && <p className="mt-9 shrink-0 px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Workspace</p>}
         <nav className={`${compact ? 'mt-9' : ''} min-h-0 flex-1 space-y-1 overflow-x-hidden overflow-y-auto pr-1 [scrollbar-width:thin]`} aria-label="Primary navigation">
-          {primaryLinks.map(({ label, icon: Icon, to }) => (
+          {visiblePrimaryLinks.map(({ label, icon: Icon, to }) => (
             <NavLink
               key={label}
               to={to}
@@ -104,7 +118,7 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
         </nav>
 
         <div className="mt-4 shrink-0 space-y-1 border-t border-slate-100 pt-4 dark:border-slate-800">
-          <NavLink
+          {canViewAttendanceRecords && <NavLink
             to="/attendance-records"
             onClick={onClose}
             title={compact ? 'Attendance Records' : undefined}
@@ -116,11 +130,11 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
           >
             <FileText size={19} className="shrink-0" />
             <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>Attendance Records</span>
-          </NavLink>
-          <NavLink to="/settings" title={compact ? 'System Settings' : undefined} className={`flex h-11 items-center rounded-xl px-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
+          </NavLink>}
+          {canViewSettings && <NavLink to="/settings" title={compact ? 'System Settings' : undefined} className={`flex h-11 items-center rounded-xl px-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
             <Settings size={19} className="shrink-0" />
             <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>System Settings</span>
-          </NavLink>
+          </NavLink>}
           <button onClick={handleLogout} title={compact ? 'Log out' : undefined} className={`flex h-11 w-full items-center rounded-xl px-3 text-sm font-medium text-rose-600 transition hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
             <LogOut size={19} className="shrink-0" />
             <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>Log out</span>
