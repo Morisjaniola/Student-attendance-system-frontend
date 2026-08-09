@@ -12,6 +12,7 @@ import { NotificationsPage } from './pages/NotificationsPage'
 import { StudentManagementPage } from './pages/StudentManagementPage'
 import { UserManagementPage } from './pages/UserManagementPage'
 import { SystemSettingsPage } from './pages/SystemSettingsPage'
+import { AuditLogsPage } from './pages/AuditLogsPage'
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
       <Route path="/notifications" element={<ProtectedRoute><DashboardLayout><NotificationsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/users" element={<ProtectedRoute><DashboardLayout><UserManagementPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><DashboardLayout><SystemSettingsPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/audit-logs" element={<ProtectedRoute><DashboardLayout><AuditLogsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )

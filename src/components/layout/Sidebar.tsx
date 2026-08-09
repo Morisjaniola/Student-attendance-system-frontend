@@ -4,6 +4,7 @@ import {
   CalendarDays,
   ChevronLeft,
   ClipboardCheck,
+  ClipboardList,
   Contact,
   FileText,
   GraduationCap,
@@ -39,6 +40,7 @@ const primaryLinks = [
   { label: 'Analytics', icon: PieChart, to: '/analytics' },
   { label: 'Notifications', icon: Bell, to: '/notifications' },
   { label: 'User Management', icon: UsersRound, to: '/users' },
+  { label: 'Audit Logs', icon: ClipboardList, to: '/audit-logs' },
 ]
 
 export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProps) {
@@ -60,11 +62,11 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
         aria-label="Close navigation"
       />
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-slate-200/75 bg-white/95 px-3 py-4 shadow-2xl shadow-slate-900/10 backdrop-blur-xl transition-[width,transform] duration-300 dark:border-slate-800 dark:bg-slate-950/95 lg:translate-x-0 lg:shadow-none ${
+        className={`fixed inset-y-0 left-0 z-40 flex h-screen shrink-0 flex-col overflow-hidden border-r border-slate-200/75 bg-white/95 px-3 py-4 shadow-2xl shadow-slate-900/10 backdrop-blur-xl transition-[width,transform] duration-300 dark:border-slate-800 dark:bg-slate-950/95 lg:translate-x-0 lg:shadow-none ${
           open ? 'translate-x-0' : '-translate-x-full'
         } ${compact ? 'lg:w-20' : 'lg:w-64'} w-64`}
       >
-        <div className="flex h-11 items-center justify-between px-2">
+        <div className="flex h-11 shrink-0 items-center justify-between px-2">
           <NavLink to="/dashboard" className="flex items-center gap-3 overflow-hidden" aria-label="Attendly dashboard">
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
               <GraduationCap size={21} strokeWidth={2.3} />
@@ -76,8 +78,8 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
           </button>
         </div>
 
-        <nav className="mt-9 space-y-1" aria-label="Primary navigation">
-          {!compact && <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Workspace</p>}
+        {!compact && <p className="mt-9 shrink-0 px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Workspace</p>}
+        <nav className={`${compact ? 'mt-9' : ''} min-h-0 flex-1 space-y-1 overflow-x-hidden overflow-y-auto pr-1 [scrollbar-width:thin]`} aria-label="Primary navigation">
           {primaryLinks.map(({ label, icon: Icon, to }) => (
             <NavLink
               key={label}
@@ -101,7 +103,7 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
           ))}
         </nav>
 
-        <div className="mt-auto space-y-1 border-t border-slate-100 pt-4 dark:border-slate-800">
+        <div className="mt-4 shrink-0 space-y-1 border-t border-slate-100 pt-4 dark:border-slate-800">
           <NavLink
             to="/attendance-records"
             onClick={onClose}

@@ -1,0 +1,20 @@
+import { ChevronDown, RotateCcw, SlidersHorizontal } from 'lucide-react'
+import type { AuditAction, AuditLog, AuditLogFilters as AuditLogFiltersState } from '../../types/auditLog'
+
+const selectClass = 'mt-1.5 h-10 w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300'
+const inputClass = 'mt-1.5 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300'
+const actions: AuditAction[] = ['CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT']
+
+interface AuditLogFiltersProps {
+  filters: AuditLogFiltersState
+  logs: AuditLog[]
+  onChange: <K extends keyof AuditLogFiltersState>(key: K, value: AuditLogFiltersState[K]) => void
+  onClear: () => void
+}
+
+export function AuditLogFilters({ filters, logs, onChange, onClear }: AuditLogFiltersProps) {
+  const users = Array.from(new Map(logs.map((log) => [log.userId, log])).values()).sort((a, b) => a.userName.localeCompare(b.userName))
+  const modules = Array.from(new Set(logs.map((log) => log.module))).sort()
+  const activeCount = Number(filters.userId !== 'All') + Number(Boolean(filters.dateFrom || filters.dateTo)) + Number(filters.module !== 'All') + Number(filters.action !== 'All')
+  return <details className="group rounded-xl border border-slate-200 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-950/40"><summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-300"><span className="flex items-center gap-2"><SlidersHorizontal size={15} className="text-blue-600" />Filters{activeCount > 0 && <span className="grid size-5 place-items-center rounded-full bg-blue-600 text-[10px] font-bold text-white">{activeCount}</span>}</span><ChevronDown size={16} className="transition group-open:rotate-180" /></summary><div className="grid gap-3 border-t border-slate-200 p-4 sm:grid-cols-2 xl:grid-cols-5 dark:border-slate-800"><label className="text-[11px] font-semibold text-slate-500">User<select value={filters.userId} onChange={(event) => onChange('userId', event.target.value)} className={selectClass} aria-label="Filter by user"><option value="All">All Users</option>{users.map((user) => <option key={user.userId} value={user.userId}>{user.userName}</option>)}</select></label><label className="text-[11px] font-semibold text-slate-500">From date<input type="date" value={filters.dateFrom} onChange={(event) => onChange('dateFrom', event.target.value)} className={inputClass} aria-label="Filter from date" /></label><label className="text-[11px] font-semibold text-slate-500">To date<input type="date" value={filters.dateTo} onChange={(event) => onChange('dateTo', event.target.value)} className={inputClass} aria-label="Filter to date" /></label><label className="text-[11px] font-semibold text-slate-500">Module<select value={filters.module} onChange={(event) => onChange('module', event.target.value)} className={selectClass} aria-label="Filter by module"><option value="All">All Modules</option>{modules.map((module) => <option key={module} value={module}>{module}</option>)}</select></label><label className="text-[11px] font-semibold text-slate-500">Action<select value={filters.action} onChange={(event) => onChange('action', event.target.value as AuditAction | 'All')} className={selectClass} aria-label="Filter by action"><option value="All">All Actions</option>{actions.map((action) => <option key={action} value={action}>{action}</option>)}</select></label><div className="sm:col-span-2 xl:col-span-5"><button type="button" onClick={onClear} className="inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-bold text-slate-500 transition hover:bg-white hover:text-blue-600 dark:hover:bg-slate-900"><RotateCcw size={14} />Clear Filters</button></div></div></details>
+}
