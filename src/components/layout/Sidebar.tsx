@@ -38,6 +38,7 @@ const primaryLinks = [
   { label: 'Reports', icon: BarChart3, to: '/reports' },
   { label: 'Analytics', icon: PieChart, to: '/analytics' },
   { label: 'Notifications', icon: Bell, to: '/notifications' },
+  { label: 'User Management', icon: UsersRound, to: '/users' },
 ]
 
 export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProps) {

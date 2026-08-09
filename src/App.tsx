@@ -10,6 +10,7 @@ import { RFIDManagementPage } from './pages/RFIDManagementPage'
 import { AnalyticsPage } from './pages/AnalyticsPage'
 import { NotificationsPage } from './pages/NotificationsPage'
 import { StudentManagementPage } from './pages/StudentManagementPage'
+import { UserManagementPage } from './pages/UserManagementPage'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
       <Route path="/attendance-records" element={<ProtectedRoute><DashboardLayout><AttendanceRecordsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/analytics" element={<ProtectedRoute><DashboardLayout><AnalyticsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><DashboardLayout><NotificationsPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/users" element={<ProtectedRoute><DashboardLayout><UserManagementPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
