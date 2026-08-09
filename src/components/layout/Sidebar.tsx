@@ -90,7 +90,16 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
         </nav>
 
         <div className="mt-auto space-y-1 border-t border-slate-100 pt-4 dark:border-slate-800">
-          <NavLink to="/records" title={compact ? 'Attendance Records' : undefined} className={`flex h-11 items-center rounded-xl px-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
+          <NavLink
+            to="/attendance-records"
+            onClick={onClose}
+            title={compact ? 'Attendance Records' : undefined}
+            className={({ isActive }) => `group flex h-11 items-center rounded-xl px-3 text-sm font-medium transition ${
+              isActive
+                ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300'
+                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100'
+            } ${compact ? 'lg:justify-center lg:px-0' : ''}`}
+          >
             <FileText size={19} className="shrink-0" />
             <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>Attendance Records</span>
           </NavLink>

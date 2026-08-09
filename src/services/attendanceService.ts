@@ -135,4 +135,13 @@ export const attendanceService = {
     const count = [...sessionRecords.values()].filter((record) => record.date === today).length
     return { dateLabel: formatDateLabel(now), count }
   },
+
+  /**
+   * Read-only view of the records created in the current session.
+   * Consumed by the Attendance Records module so that freshly scanned
+   * attendance appears in the records history (see section 16).
+   */
+  sessionRecordsList(): AttendanceRecord[] {
+    return [...sessionRecords.values()]
+  },
 }
