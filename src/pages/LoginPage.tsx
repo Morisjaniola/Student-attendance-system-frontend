@@ -20,7 +20,7 @@ export function LoginPage() {
   const requestedPath = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname
   const destination = requestedPath && requestedPath !== '/login' ? requestedPath : '/dashboard'
 
-  if (isAuthenticated && user?.role === 'Administrator') return <Navigate to={destination} replace />
+  if (isAuthenticated && user) return <Navigate to={destination} replace />
 
   const validate = (): FieldErrors => {
     const nextErrors: FieldErrors = {}
@@ -64,7 +64,7 @@ export function LoginPage() {
             <h1 className="mt-4 max-w-md text-4xl font-bold leading-tight tracking-tight">Student Attendance Monitoring System</h1>
             <p className="mt-5 max-w-md text-base leading-7 text-blue-100">Securely manage attendance records and student information from one place.</p>
           </div>
-          <p className="text-sm text-blue-100">Administrator access</p>
+          <p className="text-sm text-blue-100">Secure role-based access</p>
         </div>
 
         <div className="p-6 sm:p-10 lg:p-12">
@@ -76,7 +76,7 @@ export function LoginPage() {
           </div>
 
           <div className="mt-8 lg:mt-0">
-            <p className="text-sm font-semibold text-blue-600">Administrator portal</p>
+            <p className="text-sm font-semibold text-blue-600">School personnel portal</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">Welcome back</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">Sign in to continue to your attendance management dashboard.</p>
           </div>
@@ -141,8 +141,12 @@ export function LoginPage() {
 
           <div className="mt-7 rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-3.5 dark:border-slate-700 dark:bg-slate-950/50">
             <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Demo access</p>
-            <p className="mt-1.5 font-mono text-xs leading-5 text-slate-600 dark:text-slate-300">admin@attendance.com <span className="mx-1 text-slate-400">·</span> admin123</p>
-            <p className="mt-1 text-[11px] leading-4 text-slate-400">Use the sample administrator account above to explore the dashboard.</p>
+            <dl className="mt-1.5 space-y-1 font-mono text-xs leading-5 text-slate-600 dark:text-slate-300">
+              <div><span className="font-bold text-slate-500 dark:text-slate-400">Admin </span>admin@attendance.com <span className="mx-1 text-slate-400">·</span> admin123</div>
+              <div><span className="font-bold text-slate-500 dark:text-slate-400">Faculty </span>andrea.reyes@attendance.edu <span className="mx-1 text-slate-400">·</span> faculty123</div>
+              <div><span className="font-bold text-slate-500 dark:text-slate-400">Staff </span>camille.flores@attendance.edu <span className="mx-1 text-slate-400">·</span> staff123</div>
+            </dl>
+            <p className="mt-1 text-[11px] leading-4 text-slate-400">Use any sample account above to explore the dashboard. The role is detected from the authenticated account.</p>
           </div>
         </div>
       </section>
