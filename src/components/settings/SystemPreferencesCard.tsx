@@ -2,7 +2,9 @@ import { Languages, MonitorCog, Palette } from 'lucide-react'
 import type { SystemPreferences } from '../../types/settings'
 import { SettingsCard } from './SettingsCard'
 
-const selectClass = 'mt-1.5 h-10 w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100'
+import { fieldClass } from '../../utils/formStyles'
+
+const selectClass = `${fieldClass} mt-1.5 appearance-none`
 
 interface SystemPreferencesCardProps {
   value: SystemPreferences

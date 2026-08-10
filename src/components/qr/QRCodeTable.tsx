@@ -32,7 +32,7 @@ export function QRCodeTable({ students, onGenerate, onView, onPrint, onRegenerat
     <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="overflow-x-auto">
         <table className="w-full min-w-295 text-left">
-          <thead className="bg-slate-50/70 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:bg-slate-950/50">
+          <thead className="bg-slate-50/95 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:bg-slate-950/95">
             <tr>
               <th className="px-5 py-3">Student</th>
               <th className="px-3 py-3">Student ID</th>
@@ -115,7 +115,11 @@ export function QRCodeTable({ students, onGenerate, onView, onPrint, onRegenerat
             })}
             {visible.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-sm text-slate-400">No students match your search.</td>
+                <td colSpan={7} className="px-6 py-14 text-center">
+                  <QrCode className="mx-auto mb-2 text-slate-300" size={28} />
+                  <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">No QR codes found.</p>
+                  <p className="mt-1 text-xs text-slate-400">Adjust your search or filters to see matching students.</p>
+                </td>
               </tr>
             )}
           </tbody>

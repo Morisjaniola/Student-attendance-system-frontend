@@ -1,8 +1,10 @@
 import { ChevronDown, RotateCcw, SlidersHorizontal } from 'lucide-react'
 import type { AuditAction, AuditLog, AuditLogFilters as AuditLogFiltersState } from '../../types/auditLog'
 
-const selectClass = 'mt-1.5 h-10 w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300'
-const inputClass = 'mt-1.5 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-600 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300'
+import { fieldClass } from '../../utils/formStyles'
+
+const selectClass = `${fieldClass} mt-1.5 appearance-none`
+const inputClass = `${fieldClass} mt-1.5`
 const actions: AuditAction[] = ['CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT']
 
 interface AuditLogFiltersProps {

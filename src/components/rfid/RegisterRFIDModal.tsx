@@ -3,12 +3,13 @@ import { LoaderCircle, Plus, X } from 'lucide-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { fieldClass } from '../../utils/formStyles'
 
 const registerSchema = z.object({
   cardNumber: z.string().trim().min(1, 'RFID card number is required.').max(30, 'RFID card number must be 30 characters or fewer.'),
 })
 
-const fieldClass = 'mt-1.5 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100'
+const fieldClassWithMargin = `${fieldClass} mt-1.5`
 
 interface RegisterRFIDModalProps {
   open: boolean
@@ -47,7 +48,7 @@ export function RegisterRFIDModal({ open, existingCardNumbers, loading, onConfir
         <form onSubmit={form.handleSubmit(submit)} className="p-5 sm:p-6">
           <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300">
             RFID card number
-            <input autoFocus {...form.register('cardNumber')} placeholder="RFID-000021" className={fieldClass} />
+            <input autoFocus {...form.register('cardNumber')} placeholder="RFID-000021" className={fieldClassWithMargin} />
             {form.formState.errors.cardNumber && <p className="mt-1 text-[10px] font-medium text-rose-600">{form.formState.errors.cardNumber.message}</p>}
           </label>
           <p className="mt-2 text-[10px] leading-5 text-slate-400">The number printed on the physical RFID card. Duplicate card numbers are not allowed. Registered cards are saved as Unassigned until they are assigned to a student.</p>

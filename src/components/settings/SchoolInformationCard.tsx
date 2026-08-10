@@ -4,7 +4,9 @@ import type { ChangeEvent } from 'react'
 import type { SchoolInformation } from '../../types/settings'
 import { SettingsCard } from './SettingsCard'
 
-const inputClass = 'mt-1.5 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100'
+import { fieldClass } from '../../utils/formStyles'
+
+const inputClass = `${fieldClass} mt-1.5`
 
 interface SchoolInformationCardProps {
   value: SchoolInformation

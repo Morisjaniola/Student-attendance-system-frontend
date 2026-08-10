@@ -2,8 +2,7 @@ import { AtSign, Mail, UserRound } from 'lucide-react'
 import type { FieldErrors, UseFormRegister } from 'react-hook-form'
 import type { UserRole } from '../../types/auth'
 import type { UserFormValues, UserStatus } from '../../types/user'
-
-const fieldClass = 'h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100'
+import { fieldClass } from '../../utils/formStyles'
 
 const ROLES: UserRole[] = ['Administrator', 'Faculty', 'Staff']
 const STATUSES: UserStatus[] = ['Active', 'Inactive']

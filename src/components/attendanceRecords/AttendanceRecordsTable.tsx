@@ -1,4 +1,4 @@
-import { LoaderCircle, Pencil, Trash2 } from 'lucide-react'
+import { ClipboardList, LoaderCircle, Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import type { AttendanceRecord } from '../../types/attendanceRecord'
 import { initials } from '../../utils/format'
@@ -28,7 +28,7 @@ export function AttendanceRecordsTable({ records, canEdit, canDelete, busyRecord
     <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="overflow-x-auto">
         <table className="w-full min-w-295 text-left">
-          <thead className="bg-slate-50/70 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:bg-slate-950/50">
+          <thead className="bg-slate-50/95 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:bg-slate-950/95">
             <tr>
               <th className="px-5 py-3">Student ID</th>
               <th className="px-3 py-3">Student name</th>
@@ -99,7 +99,11 @@ export function AttendanceRecordsTable({ records, canEdit, canDelete, busyRecord
             })}
             {visible.length === 0 && (
               <tr>
-                <td colSpan={showActions ? 10 : 9} className="px-6 py-14 text-center text-sm text-slate-400">No attendance records found.</td>
+                <td colSpan={showActions ? 10 : 9} className="px-6 py-14 text-center">
+                  <ClipboardList className="mx-auto mb-2 text-slate-300" size={28} />
+                  <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">No attendance records found.</p>
+                  <p className="mt-1 text-xs text-slate-400">Adjust your search or filters to see matching records.</p>
+                </td>
               </tr>
             )}
           </tbody>

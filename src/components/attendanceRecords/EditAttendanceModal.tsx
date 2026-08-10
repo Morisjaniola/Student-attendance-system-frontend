@@ -8,11 +8,12 @@ import type { AttendanceMethod, AttendanceStatus } from '../../types/dashboard'
 import type { AttendanceRecord } from '../../types/attendanceRecord'
 import type { Student } from '../../types/student'
 import { initials } from '../../utils/format'
+import { fieldClass } from '../../utils/formStyles'
 import { AttendanceMethodBadge, AttendanceStatusBadge } from './AttendanceBadges'
 
-const baseFieldClass = 'h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400 dark:disabled:bg-slate-950/40'
+const baseFieldClass = `${fieldClass} disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400 dark:disabled:bg-slate-950/40`
 
-const fieldClass = `${baseFieldClass} mt-1.5`
+const fieldClassWithMargin = `${baseFieldClass} mt-1.5`
 
 const editSchema = z.object({
   studentId: z.string().min(1, 'Select a student.'),
@@ -184,7 +185,7 @@ export function EditAttendanceModal({ open, record, students, studentsLoading, s
           <div className="mt-4 grid grid-cols-2 gap-3">
             <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300">
               Date
-              <input type="date" {...form.register('date')} className={fieldClass} />
+              <input type="date" {...form.register('date')} className={fieldClassWithMargin} />
               {form.formState.errors.date && <p className="mt-1 text-[10px] font-medium text-rose-600">{form.formState.errors.date.message}</p>}
             </label>
             <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300">
@@ -193,7 +194,7 @@ export function EditAttendanceModal({ open, record, students, studentsLoading, s
                 type="time"
                 {...form.register('time')}
                 disabled={noCheckIn}
-                className={fieldClass}
+                className={fieldClassWithMargin}
               />
               {noCheckIn ? (
                 <p className="mt-1 text-[10px] text-slate-400">No check-in time for {watchedStatus.toLowerCase()} records.</p>

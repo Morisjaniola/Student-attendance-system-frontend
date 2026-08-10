@@ -24,7 +24,7 @@ export function UserTable({ users, currentUserId, canUpdate, canActivate, canAss
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-295 text-left">
-        <thead className="bg-slate-50/70 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:bg-slate-950/50">
+        <thead className="bg-slate-50/95 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:bg-slate-950/95">
           <tr>
             <th className="px-5 py-3">User</th>
             <th className="px-3 py-3">User ID</th>

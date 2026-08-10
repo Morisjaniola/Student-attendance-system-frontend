@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import type { RFIDCard } from '../../types/rfid'
+import { fieldClass } from '../../utils/formStyles'
 import { ConfirmationModal } from '../dialogs/ConfirmationModal'
 import { RFIDStatusBadge } from './RFIDStatusBadge'
 
@@ -11,7 +12,7 @@ const replaceSchema = z.object({
   newCardNumber: z.string().trim().min(1, 'Enter the new RFID card number.').max(30, 'RFID card number must be 30 characters or fewer.'),
 })
 
-const fieldClass = 'mt-1.5 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-600/10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100'
+const fieldClassWithMargin = `${fieldClass} mt-1.5`
 
 interface ReplaceRFIDModalProps {
   open: boolean
@@ -74,7 +75,7 @@ export function ReplaceRFIDModal({ open, card, existingCardNumbers, loading, onC
             <form onSubmit={form.handleSubmit(submit)} className="mt-4">
               <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300">
                 New RFID card number
-                <input autoFocus {...form.register('newCardNumber')} placeholder="RFID-000022" className={fieldClass} />
+                <input autoFocus {...form.register('newCardNumber')} placeholder="RFID-000022" className={fieldClassWithMargin} />
                 {form.formState.errors.newCardNumber && <p className="mt-1 text-[10px] font-medium text-rose-600">{form.formState.errors.newCardNumber.message}</p>}
               </label>
               <p className="mt-2 text-[10px] leading-5 text-slate-400">The current card will be disabled and the new card will be linked to the same student. Duplicate card numbers are not allowed.</p>
