@@ -23,11 +23,13 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
+    <div className="h-screen overflow-hidden bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
       <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} compact={compact} onCompactChange={() => setCompact((value) => !value)} />
-      <div className={`min-h-screen transition-[margin] duration-300 ${compact ? 'lg:ml-20' : 'lg:ml-64'}`}>
+      <div className={`flex h-full min-w-0 min-h-0 flex-col overflow-hidden transition-[margin] duration-300 ${compact ? 'lg:ml-20' : 'lg:ml-64'}`}>
         <TopNavbar onMenu={() => setMenuOpen(true)} isDark={isDark} onThemeToggle={() => setThemePreference(isDark ? 'Light' : 'Dark')} />
-        <main className="mx-auto w-full max-w-[1700px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">{children}</main>
+        <main className="min-h-0 flex-1 overflow-y-auto">
+          <div className="mx-auto w-full max-w-[1700px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">{children}</div>
+        </main>
       </div>
     </div>
   )
