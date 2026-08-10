@@ -1,5 +1,6 @@
 import { Bell, ChevronDown, Menu, Moon, Search, Sun } from 'lucide-react'
 import { useAuthStore } from '../../stores/authStore'
+import { GlobalSearch } from '../search/GlobalSearch'
 
 interface TopNavbarProps {
   onMenu: () => void
@@ -17,9 +18,9 @@ export function TopNavbar({ onMenu, isDark, onThemeToggle }: TopNavbarProps) {
         <button onClick={onMenu} className="grid size-10 place-items-center rounded-xl text-slate-600 hover:bg-white hover:shadow-sm lg:hidden dark:text-slate-300 dark:hover:bg-slate-900" aria-label="Open navigation">
           <Menu size={21} />
         </button>
-        <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-400 shadow-sm sm:flex dark:border-slate-800 dark:bg-slate-900">
+        <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-400 shadow-sm transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-600/10 sm:flex dark:border-slate-800 dark:bg-slate-900">
           <Search size={17} />
-          <input aria-label="Search dashboard" placeholder="Search students, reports..." className="w-44 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 xl:w-64" />
+          <GlobalSearch />
           <kbd className="hidden rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-medium text-slate-400 xl:block dark:border-slate-700 dark:bg-slate-800">⌘ K</kbd>
         </div>
       </div>
