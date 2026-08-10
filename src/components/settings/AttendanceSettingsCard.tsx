@@ -16,7 +16,7 @@ export function AttendanceSettingsCard({ value, saving, onChange, onSave }: Atte
   const update = <K extends keyof AttendanceSettings>(key: K, next: AttendanceSettings[K]) => onChange({ ...value, [key]: next })
   return (
     <SettingsCard title="Attendance Settings" description="Set the daily attendance window and rules for late arrivals." icon={<CalendarClock size={19} />} saving={saving} onSave={onSave}>
-      <div className="grid gap-4 py-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 py-4 sm:grid-cols-2">
         <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300"><span className="flex items-center gap-1.5"><Clock3 size={13} />School start time</span><input type="time" value={value.schoolStartTime} onChange={(event) => update('schoolStartTime', event.target.value)} className={timeInputClass} /></label>
         <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300">Attendance start time<input type="time" value={value.attendanceStartTime} onChange={(event) => update('attendanceStartTime', event.target.value)} className={timeInputClass} /></label>
         <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300"><span className="flex items-center gap-1.5"><AlarmClock size={13} />Late threshold</span><input type="time" value={value.lateThreshold} onChange={(event) => update('lateThreshold', event.target.value)} className={timeInputClass} /></label>

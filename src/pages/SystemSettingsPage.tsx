@@ -43,12 +43,12 @@ export function SystemSettingsPage() {
         <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 dark:bg-blue-500/10 dark:text-blue-300"><Settings2 size={13} />Frontend mock settings</span>
       </section>
 
-      <div className="grid gap-6 2xl:grid-cols-2">
-        <SchoolInformationCard value={draft.schoolInformation} saving={schoolMutation.isPending} onChange={(schoolInformation) => setDraft({ ...draft, schoolInformation })} onSave={() => schoolMutation.mutate(draft.schoolInformation)} />
-        <AttendanceSettingsCard value={draft.attendance} saving={attendanceMutation.isPending} onChange={(attendance) => setDraft({ ...draft, attendance })} onSave={() => attendanceMutation.mutate(draft.attendance)} />
-        <QrRfidSettingsCard value={draft.qrRfid} saving={qrRfidMutation.isPending} onChange={(qrRfid) => setDraft({ ...draft, qrRfid })} onSave={() => qrRfidMutation.mutate(draft.qrRfid)} />
-        <NotificationSettingsCard value={draft.notifications} saving={notificationsMutation.isPending} onChange={(notifications) => setDraft({ ...draft, notifications })} onSave={() => notificationsMutation.mutate(draft.notifications)} />
-        <div className="2xl:col-span-2"><SystemPreferencesCard value={draft.preferences} saving={preferencesMutation.isPending} onChange={(preferences) => setDraft({ ...draft, preferences })} onSave={() => preferencesMutation.mutate(draft.preferences)} /></div>
+      <div className="grid gap-6 xl:grid-cols-2">
+        <SchoolInformationCard value={draft.schoolInformation} saving={schoolMutation.isPending} onChange={(schoolInformation) => setDraft((prev) => (prev ? { ...prev, schoolInformation } : prev))} onSave={() => schoolMutation.mutate(draft.schoolInformation)} />
+        <AttendanceSettingsCard value={draft.attendance} saving={attendanceMutation.isPending} onChange={(attendance) => setDraft((prev) => (prev ? { ...prev, attendance } : prev))} onSave={() => attendanceMutation.mutate(draft.attendance)} />
+        <QrRfidSettingsCard value={draft.qrRfid} saving={qrRfidMutation.isPending} onChange={(qrRfid) => setDraft((prev) => (prev ? { ...prev, qrRfid } : prev))} onSave={() => qrRfidMutation.mutate(draft.qrRfid)} />
+        <NotificationSettingsCard value={draft.notifications} saving={notificationsMutation.isPending} onChange={(notifications) => setDraft((prev) => (prev ? { ...prev, notifications } : prev))} onSave={() => notificationsMutation.mutate(draft.notifications)} />
+        <div className="xl:col-span-2"><SystemPreferencesCard value={draft.preferences} saving={preferencesMutation.isPending} onChange={(preferences) => setDraft((prev) => (prev ? { ...prev, preferences } : prev))} onSave={() => preferencesMutation.mutate(draft.preferences)} /></div>
       </div>
 
       {notice && <div className={`fixed bottom-5 right-5 z-[80] flex max-w-sm items-center gap-3 rounded-xl px-4 py-3 text-sm text-white shadow-2xl ${notice.tone === 'success' ? 'bg-slate-900 dark:bg-white dark:text-slate-900' : 'bg-rose-600'}`} role="status"><span className="shrink-0">{notice.tone === 'success' ? <CheckCircle2 size={18} className="text-emerald-400" /> : <ShieldAlert size={18} />}</span><span className="flex-1">{notice.message}</span><button type="button" onClick={() => setNotice(null)} aria-label="Dismiss notification" className="rounded p-1 hover:bg-white/10 dark:hover:bg-slate-100"><X size={15} /></button></div>}
