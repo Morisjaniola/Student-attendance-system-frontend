@@ -1,12 +1,10 @@
 import {
   BarChart3,
   Bell,
-  CalendarDays,
   ChevronLeft,
   ClipboardCheck,
   ClipboardList,
   Contact,
-  FileText,
   GraduationCap,
   LayoutDashboard,
   LogOut,
@@ -42,7 +40,7 @@ const primaryLinks: { label: string; icon: LucideIcon; to: string; module: Syste
   { label: 'RFID Management', icon: Contact, to: '/rfid', module: 'RFID Management' },
   { label: 'Attendance Monitoring', icon: ClipboardCheck, to: '/attendance-monitoring', module: 'Attendance Monitoring' },
   { label: 'Live Scanning', icon: ScanLine, to: '/scanning', module: 'Attendance Monitoring' },
-  { label: 'Attendance', icon: CalendarDays, to: '/attendance', module: 'Attendance Records' },
+  { label: 'Attendance Records', icon: ClipboardList, to: '/attendance-records', module: 'Attendance Records' },
   { label: 'Reports', icon: BarChart3, to: '/reports', module: 'Analytics' },
   { label: 'Analytics', icon: PieChart, to: '/analytics', module: 'Analytics' },
   { label: 'Notifications', icon: Bell, to: '/notifications', module: 'Notifications' },
@@ -57,9 +55,8 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
   const currentUser = useAuthStore((state) => state.user)
   const unreadCount = useNotificationsUnreadCount()
   const permissionRevision = useRoleStore((state) => state.permissionRevision)
-  const { visiblePrimaryLinks, canViewAttendanceRecords, canViewSettings } = useMemo(() => ({
+  const { visiblePrimaryLinks, canViewSettings } = useMemo(() => ({
     visiblePrimaryLinks: primaryLinks.filter((link) => hasPermission(currentUser?.role, link.module, 'View')),
-    canViewAttendanceRecords: hasPermission(currentUser?.role, 'Attendance Records', 'View'),
     canViewSettings: hasPermission(currentUser?.role, 'System Settings', 'View'),
   }), [currentUser?.role, permissionRevision])
   const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState(false)
@@ -95,7 +92,7 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
           </button>
         </div>
 
-        {!compact && <p className="mt-9 shrink-0 px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Workspace</p>}
+        {!compact && <p className="mt-9 shrink-0 px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">{currentUser?.role === 'Staff' ? 'Staff' : 'Workspace'}</p>}
         <nav className={`${compact ? 'mt-9' : ''} min-h-0 flex-1 space-y-1 overflow-x-hidden overflow-y-auto pr-1 [scrollbar-width:thin]`} aria-label="Primary navigation">
           {visiblePrimaryLinks.map(({ label, icon: Icon, to }) => (
             <NavLink
@@ -121,19 +118,6 @@ export function Sidebar({ open, onClose, compact, onCompactChange }: SidebarProp
         </nav>
 
         <div className="mt-4 shrink-0 space-y-1 border-t border-slate-100 pt-4 dark:border-slate-800">
-          {canViewAttendanceRecords && <NavLink
-            to="/attendance-records"
-            onClick={onClose}
-            title={compact ? 'Attendance Records' : undefined}
-            className={({ isActive }) => `group flex h-11 items-center rounded-xl px-3 text-sm font-medium transition ${
-              isActive
-                ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300'
-                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100'
-            } ${compact ? 'lg:justify-center lg:px-0' : ''}`}
-          >
-            <FileText size={19} className="shrink-0" />
-            <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>Attendance Records</span>
-          </NavLink>}
           {canViewSettings && <NavLink to="/settings" title={compact ? 'System Settings' : undefined} className={`flex h-11 items-center rounded-xl px-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100 ${compact ? 'lg:justify-center lg:px-0' : ''}`}>
             <Settings size={19} className="shrink-0" />
             <span className={`ml-3 whitespace-nowrap ${compact ? 'lg:hidden' : ''}`}>System Settings</span>
