@@ -51,7 +51,7 @@ export function SystemSettingsPage() {
         <div className="xl:col-span-2"><SystemPreferencesCard value={draft.preferences} saving={preferencesMutation.isPending} onChange={(preferences) => setDraft((prev) => (prev ? { ...prev, preferences } : prev))} onSave={() => preferencesMutation.mutate(draft.preferences)} /></div>
       </div>
 
-      {notice && <div className={`fixed bottom-5 right-5 z-[80] flex max-w-sm items-center gap-3 rounded-xl px-4 py-3 text-sm text-white shadow-2xl ${notice.tone === 'success' ? 'bg-slate-900 dark:bg-white dark:text-slate-900' : 'bg-rose-600'}`} role="status"><span className="shrink-0">{notice.tone === 'success' ? <CheckCircle2 size={18} className="text-emerald-400" /> : <ShieldAlert size={18} />}</span><span className="flex-1">{notice.message}</span><button type="button" onClick={() => setNotice(null)} aria-label="Dismiss notification" className="rounded p-1 hover:bg-white/10 dark:hover:bg-slate-100"><X size={15} /></button></div>}
+      {notice && <div className={`fixed bottom-5 right-5 z-80 flex max-w-sm items-center gap-3 rounded-xl px-4 py-3 text-sm text-white shadow-2xl ${notice.tone === 'success' ? 'bg-slate-900 dark:bg-white dark:text-slate-900' : 'bg-rose-600'}`} role="status"><span className="shrink-0">{notice.tone === 'success' ? <CheckCircle2 size={18} className="text-emerald-400" /> : <ShieldAlert size={18} />}</span><span className="flex-1">{notice.message}</span><button type="button" onClick={() => setNotice(null)} aria-label="Dismiss notification" className="rounded p-1 hover:bg-white/10 dark:hover:bg-slate-100"><X size={15} /></button></div>}
     </div>
   )
 }
