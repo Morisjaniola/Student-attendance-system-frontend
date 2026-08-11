@@ -43,7 +43,7 @@ const primaryLinks: { label: string; icon: LucideIcon; to: string; module: Syste
   { label: 'Attendance Monitoring', icon: ClipboardCheck, to: '/attendance-monitoring', module: 'Attendance Monitoring' },
   { label: 'Live Scanning', icon: ScanLine, to: '/scanning', module: 'Attendance Monitoring' },
   { label: 'Attendance', icon: CalendarDays, to: '/attendance', module: 'Attendance Records' },
-  { label: 'Reports', icon: BarChart3, to: '/reports', module: 'Analytics' },
+  { label: 'Reports', icon: BarChart3, to: '/reports', module: 'Reports' },
   { label: 'Analytics', icon: PieChart, to: '/analytics', module: 'Analytics' },
   { label: 'Notifications', icon: Bell, to: '/notifications', module: 'Notifications' },
   { label: 'User Management', icon: UsersRound, to: '/users', module: 'User Management' },

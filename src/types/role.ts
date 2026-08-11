@@ -8,6 +8,7 @@ export type SystemModule =
   | 'RFID Management'
   | 'Attendance Monitoring'
   | 'Attendance Records'
+  | 'Reports'
   | 'Analytics'
   | 'Notifications'
   | 'User Management'
@@ -53,6 +54,7 @@ export const MODULE_ACTIONS: Record<SystemModule, PermissionAction[]> = {
   'RFID Management': ['View', 'Create', 'Update', 'Delete'],
   'Attendance Monitoring': ['View', 'Create', 'Update'],
   'Attendance Records': ['View', 'Create', 'Update', 'Delete'],
+  Reports: ['View'],
   Analytics: ['View'],
   Notifications: ['View', 'Update', 'Delete'],
   'User Management': ['View', 'Create', 'Update', 'Delete'],
