@@ -40,6 +40,14 @@ export interface CourseAttendance {
   course: string
   rate: number
   students: number
+  /** Optional per-status breakdown shown in the tooltip when the data source provides it. */
+  present?: number
+  late?: number
+  absent?: number
+  /** Optional total records when it differs from enrolled `students`. */
+  total?: number
+  /** Optional previous-period rate used for the trend comparison. */
+  previousRate?: number
 }
 
 export interface ScanMetric {
