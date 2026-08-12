@@ -5,13 +5,81 @@ import {
   GraduationCap,
   UserRoundCheck,
 } from 'lucide-react'
-import type { DashboardData } from '../types/dashboard'
+import type { AttendanceTrendPoint, DashboardData } from '../types/dashboard'
 
-const dates = [
-  'Jul 09', 'Jul 10', 'Jul 11', 'Jul 14', 'Jul 15', 'Jul 16', 'Jul 17', 'Jul 18', 'Jul 21', 'Jul 22',
-  'Jul 23', 'Jul 24', 'Jul 25', 'Jul 28', 'Jul 29', 'Jul 30', 'Jul 31', 'Aug 01', 'Aug 04', 'Aug 05',
-  'Aug 06', 'Aug 07', 'Aug 08', 'Aug 11', 'Aug 12', 'Aug 13', 'Aug 14', 'Aug 15', 'Aug 18', 'Aug 19',
+// ---------------------------------------------------------------------------
+// Attendance trend (60 school days: 30-day previous period + 30-day current
+// period, Mon–Sat cadence like the original mock).
+//
+// Each point carries an ISO date so the dashboard chart can filter by period
+// (Last 7 Days / Last 30 Days / This Month / This Semester) and compare against
+// the previous equivalent period. The excused count is included so the
+// attendance rate can be computed as (Present + Excused) / Total × 100.
+// ---------------------------------------------------------------------------
+
+const CURRENT_TREND_DATES = [
+  '2026-07-09', '2026-07-10', '2026-07-11', '2026-07-14', '2026-07-15', '2026-07-16', '2026-07-17', '2026-07-18', '2026-07-21', '2026-07-22',
+  '2026-07-23', '2026-07-24', '2026-07-25', '2026-07-28', '2026-07-29', '2026-07-30', '2026-07-31', '2026-08-01', '2026-08-04', '2026-08-05',
+  '2026-08-06', '2026-08-07', '2026-08-08', '2026-08-11', '2026-08-12', '2026-08-13', '2026-08-14', '2026-08-15', '2026-08-18', '2026-08-19',
 ]
+
+const TREND_PRESENT = [88, 90, 87, 91, 89, 92, 90, 86, 88, 91, 93, 90, 92, 89, 94, 91, 93, 88, 90, 92, 89, 94, 91, 93, 90, 92, 95, 93, 91, 94]
+const TREND_ABSENT = [7, 5, 8, 5, 6, 4, 5, 9, 7, 5, 4, 6, 4, 7, 3, 5, 4, 8, 6, 5, 7, 3, 5, 4, 6, 4, 3, 4, 5, 3]
+const TREND_LATE = [5, 5, 5, 4, 5, 4, 5, 5, 5, 4, 3, 4, 4, 4, 3, 4, 3, 4, 4, 3, 4, 3, 4, 3, 4, 4, 2, 3, 4, 3]
+const TREND_EXCUSED = [3, 2, 4, 2, 3, 2, 3, 2, 3, 2, 3, 4, 2, 3, 2, 3, 4, 2, 3, 2, 4, 2, 3, 2, 3, 4, 2, 3, 2, 3]
+
+/** '2026-07-09' -> 'Jul 09' (compact axis label). */
+function trendDateLabel(iso: string) {
+  const [year, month, day] = iso.split('-').map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
+}
+
+/** Mon–Sat school days strictly before `beforeIso`, oldest first. */
+function previousSchoolDays(beforeIso: string, count: number): string[] {
+  const result: string[] = []
+  const cursor = new Date(`${beforeIso}T00:00:00`)
+  cursor.setDate(cursor.getDate() - 1)
+  while (result.length < count) {
+    if (cursor.getDay() !== 0) {
+      result.push(`${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}-${String(cursor.getDate()).padStart(2, '0')}`)
+    }
+    cursor.setDate(cursor.getDate() - 1)
+  }
+  return result.reverse()
+}
+
+/**
+ * 60 school days (previous + current) with isoDate, label, and all four
+ * statuses. The previous 30 days reuse the current values with a small
+ * deterministic downward shift in the attendance rate (more absent/late,
+ * fewer present) so the computed period comparison reflects a realistic
+ * ~2-3pp improvement (mirrors the original mock narrative).
+ */
+function buildTrend(): AttendanceTrendPoint[] {
+  const previousDates = previousSchoolDays('2026-07-09', 30)
+  const previous = previousDates.map((isoDate, index) => {
+    const src = (index + 12) % TREND_PRESENT.length
+    return {
+      isoDate,
+      date: trendDateLabel(isoDate),
+      present: Math.max(80, TREND_PRESENT[src] - 3),
+      absent: Math.min(12, TREND_ABSENT[src] + 2),
+      late: Math.max(2, TREND_LATE[src] + 1),
+      excused: Math.max(1, TREND_EXCUSED[src] - 1),
+    }
+  })
+
+  const current = CURRENT_TREND_DATES.map((isoDate, index) => ({
+    isoDate,
+    date: trendDateLabel(isoDate),
+    present: TREND_PRESENT[index],
+    absent: TREND_ABSENT[index],
+    late: TREND_LATE[index],
+    excused: TREND_EXCUSED[index],
+  }))
+
+  return [...previous, ...current]
+}
 
 export const dashboardData: DashboardData = {
   attendanceStats: [
@@ -81,12 +149,7 @@ export const dashboardData: DashboardData = {
     { id: 'a-09', studentId: '2024-00964', name: 'Beatriz R. Lim', initials: 'BL', avatarColor: 'bg-indigo-100 text-indigo-700', course: 'BS Accountancy', year: '1st Year', section: 'BSA-1B', method: 'QR Code', timeIn: '9:45 AM', status: 'Present', device: 'Gate A Scanner' },
     { id: 'a-10', studentId: '2024-01090', name: 'Noel P. Aquino', initials: 'NA', avatarColor: 'bg-slate-200 text-slate-700', course: 'BS Psychology', year: '4th Year', section: 'PSY-4A', method: 'RFID', timeIn: '9:36 AM', status: 'Absent', device: 'Adviser record' },
   ],
-  trend: dates.map((date, index) => ({
-    date,
-    present: [88, 90, 87, 91, 89, 92, 90, 86, 88, 91, 93, 90, 92, 89, 94, 91, 93, 88, 90, 92, 89, 94, 91, 93, 90, 92, 95, 93, 91, 94][index],
-    absent: [7, 5, 8, 5, 6, 4, 5, 9, 7, 5, 4, 6, 4, 7, 3, 5, 4, 8, 6, 5, 7, 3, 5, 4, 6, 4, 3, 4, 5, 3][index],
-    late: [5, 5, 5, 4, 5, 4, 5, 5, 5, 4, 3, 4, 4, 4, 3, 4, 3, 4, 4, 3, 4, 3, 4, 3, 4, 4, 2, 3, 4, 3][index],
-  })),
+  trend: buildTrend(),
   distribution: [
     { name: 'Present', value: 1116, color: '#22c55e' },
     { name: 'Absent', value: 58, color: '#ef4444' },
