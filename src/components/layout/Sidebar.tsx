@@ -21,8 +21,8 @@ import { useMemo, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
 import { useNotificationsUnreadCount } from '../../hooks/useNotificationsUnreadCount'
-import { useAuthStore } from '../../stores/authStore'
 import { hasPermission } from '../../services/roleService'
+import { useAuthStore } from '../../stores/authStore'
 import { useRoleStore } from '../../stores/roleStore'
 import type { SystemModule } from '../../types/role'
 import { ConfirmationModal } from '../dialogs/ConfirmationModal'
@@ -135,20 +135,19 @@ export function Sidebar({
     (state) => state.permissionRevision,
   )
 
-  const { visiblePrimaryLinks, canViewSettings } = useMemo(() => {
-    const role = currentUser?.role
-
-    return {
+  const { visiblePrimaryLinks, canViewSettings } = useMemo(
+    () => ({
       visiblePrimaryLinks: primaryLinks.filter((link) =>
-        hasPermission(role, link.module, 'View'),
+        hasPermission(currentUser?.role, link.module, 'View'),
       ),
       canViewSettings: hasPermission(
-        role,
+        currentUser?.role,
         'System Settings',
         'View',
       ),
-    }
-  }, [currentUser?.role, permissionRevision])
+    }),
+    [currentUser?.role, permissionRevision],
+  )
 
   const [logoutConfirmationOpen, setLogoutConfirmationOpen] =
     useState(false)
@@ -162,7 +161,6 @@ export function Sidebar({
 
   return (
     <>
-      {/* Mobile overlay */}
       <button
         type="button"
         className={`fixed inset-0 z-30 bg-slate-950/35 lg:hidden ${
@@ -172,19 +170,17 @@ export function Sidebar({
         aria-label="Close navigation"
       />
 
-      {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-40 flex h-screen shrink-0 flex-col overflow-hidden border-r border-slate-200/75 bg-white/95 px-3 py-4 shadow-2xl shadow-slate-900/10 backdrop-blur-xl transition-[width,transform] duration-300 dark:border-slate-800 dark:bg-slate-950/95 lg:translate-x-0 lg:shadow-none ${
           open ? 'translate-x-0' : '-translate-x-full'
         } ${compact ? 'lg:w-20' : 'lg:w-64'} w-64`}
       >
-        {/* Header / Logo */}
         <div className="flex h-11 shrink-0 items-center justify-between px-2">
           <NavLink
             to="/dashboard"
-            onClick={onClose}
             className="flex items-center gap-3 overflow-hidden"
             aria-label="Attendly dashboard"
+            onClick={onClose}
           >
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
               <GraduationCap size={21} strokeWidth={2.3} />
@@ -209,14 +205,12 @@ export function Sidebar({
           </button>
         </div>
 
-        {/* Section label */}
         {!compact && (
           <p className="mt-9 shrink-0 px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
             {currentUser?.role === 'Staff' ? 'Staff' : 'Workspace'}
           </p>
         )}
 
-        {/* Scrollable navigation only */}
         <nav
           className={`${
             compact ? 'mt-9' : ''
@@ -265,7 +259,6 @@ export function Sidebar({
           ))}
         </nav>
 
-        {/* Fixed footer */}
         <div className="mt-4 shrink-0 space-y-1 border-t border-slate-100 pt-4 dark:border-slate-800">
           {canViewSettings && (
             <NavLink
@@ -280,10 +273,7 @@ export function Sidebar({
                 } ${compact ? 'lg:justify-center lg:px-0' : ''}`
               }
             >
-              <Settings
-                size={19}
-                className="shrink-0"
-              />
+              <Settings size={19} className="shrink-0" />
 
               <span
                 className={`ml-3 whitespace-nowrap ${
@@ -303,10 +293,7 @@ export function Sidebar({
               compact ? 'lg:justify-center lg:px-0' : ''
             }`}
           >
-            <LogOut
-              size={19}
-              className="shrink-0"
-            />
+            <LogOut size={19} className="shrink-0" />
 
             <span
               className={`ml-3 whitespace-nowrap ${
