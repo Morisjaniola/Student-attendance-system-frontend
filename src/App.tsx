@@ -3,6 +3,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { DashboardLayout } from './components/layout/DashboardLayout'
 import { AttendanceMonitoringPage } from './pages/AttendanceMonitoringPage'
 import { AttendanceRecordsPage } from './pages/AttendanceRecordsPage'
+import { ReportsPage } from './pages/ReportsPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { QRCodeManagementPage } from './pages/QRCodeManagementPage'
@@ -14,7 +15,6 @@ import { UserManagementPage } from './pages/UserManagementPage'
 import { SystemSettingsPage } from './pages/SystemSettingsPage'
 import { AuditLogsPage } from './pages/AuditLogsPage'
 import { RolesPermissionsPage } from './pages/RolesPermissionsPage'
-import { ReportsPage } from './pages/ReportsPage'
 
 function App() {
   return (
@@ -30,7 +30,6 @@ function App() {
       <Route path="/attendance-records" element={<ProtectedRoute module="Attendance Records"><DashboardLayout><AttendanceRecordsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/reports" element={<ProtectedRoute module="Reports"><DashboardLayout><ReportsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/analytics" element={<ProtectedRoute module="Analytics"><DashboardLayout><AnalyticsPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/reports" element={<ProtectedRoute module="Analytics"><DashboardLayout><AnalyticsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute module="Notifications"><DashboardLayout><NotificationsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/users" element={<ProtectedRoute module="User Management"><DashboardLayout><UserManagementPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute module="System Settings"><DashboardLayout><SystemSettingsPage /></DashboardLayout></ProtectedRoute>} />
