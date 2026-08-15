@@ -30,16 +30,28 @@ export interface AttendanceActivity {
 }
 
 export interface AttendanceTrendPoint {
+  /** ISO date (e.g. 2026-08-09) for period filtering; analytics trend points may omit it. */
+  isoDate?: string
   date: string
   present: number
   absent: number
   late: number
+  /** Excused records; analytics trend points may omit it. */
+  excused?: number
 }
 
 export interface CourseAttendance {
   course: string
   rate: number
   students: number
+  /** Optional per-status breakdown shown in the tooltip when the data source provides it. */
+  present?: number
+  late?: number
+  absent?: number
+  /** Optional total records when it differs from enrolled `students`. */
+  total?: number
+  /** Optional previous-period rate used for the trend comparison. */
+  previousRate?: number
 }
 
 export interface ScanMetric {
