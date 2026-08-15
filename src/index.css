@@ -42,3 +42,18 @@ button:disabled { cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+.reports-print-area { display: none; }
+@media print {
+  body * { visibility: hidden; }
+  .reports-print-area, .reports-print-area * { visibility: visible; }
+  .reports-print-area { display: block; position: absolute; inset: 0; width: 100%; color: #0f172a; font: 11px/1.4 Arial, sans-serif; }
+  .reports-print-area header { border-bottom: 2px solid #1d4ed8; margin-bottom: 14px; padding-bottom: 10px; }
+  .reports-print-area h1 { margin: 0; font-size: 17px; }
+  .reports-print-area h2 { margin: 5px 0; font-size: 14px; }
+  .reports-print-area p { margin: 3px 0; }
+  .print-summary { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 12px 0; font-weight: bold; }
+  .reports-print-area table { width: 100%; border-collapse: collapse; }
+  .reports-print-area th, .reports-print-area td { border: 1px solid #cbd5e1; padding: 6px; text-align: left; }
+  .reports-print-area th { background: #eff6ff; }
+}
