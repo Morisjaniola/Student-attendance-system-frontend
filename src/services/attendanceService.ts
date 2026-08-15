@@ -6,7 +6,7 @@ import type { AttendanceRecord, AttendanceValidationResult, DuplicateRecord, Sca
 import type { Student } from '../types/student'
 
 // ---------------------------------------------------------------------------
-// Attendance Monitoring service (mock frontend implementation).
+// Live Scanning service (mock frontend implementation).
 //
 // Replace the in-memory session store below with PHP API calls when the
 // backend is ready. Keep the same method signatures so the view layer does
