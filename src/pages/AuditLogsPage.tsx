@@ -15,7 +15,7 @@ export function AuditLogsPage() {
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null)
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(10)
-  const { data: logs = [], isPending, isError } = useQuery({ queryKey: ['audit-logs'], queryFn: auditLogService.list, staleTime: Infinity })
+  const { data: logs = [], isPending, isError } = useQuery({ queryKey: ['audit-logs'], queryFn: auditLogService.list, staleTime: Infinity, refetchOnMount: 'always' })
 
   const filteredLogs = useMemo(() => {
     const query = filters.query.trim().toLowerCase()
