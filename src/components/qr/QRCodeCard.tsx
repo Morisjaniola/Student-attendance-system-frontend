@@ -14,10 +14,12 @@ interface QRCodeCardProps {
   onView: (student: StudentQRCode) => void
   onPrint: (student: StudentQRCode) => void
   onRegenerate: (student: StudentQRCode) => void
+  /** When false, regeneration is disabled by System Settings. */
+  regenerateDisabled?: boolean
   busy?: boolean
 }
 
-export function QRCodeCard({ student, onGenerate, onView, onPrint, onRegenerate, busy }: QRCodeCardProps) {
+export function QRCodeCard({ student, onGenerate, onView, onPrint, onRegenerate, regenerateDisabled = false, busy }: QRCodeCardProps) {
   const generated = student.status === 'Generated' && Boolean(student.qrValue)
   return (
     <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -63,7 +65,7 @@ export function QRCodeCard({ student, onGenerate, onView, onPrint, onRegenerate,
               <Printer size={15} />
             </button>
             <QRCodeDownloadButton student={student} variant="icon" />
-            <button onClick={() => onRegenerate(student)} disabled={busy} className="grid size-8 place-items-center rounded-lg text-slate-400 hover:bg-amber-50 hover:text-amber-600 disabled:opacity-50 dark:hover:bg-amber-500/10" aria-label={`Regenerate ${student.name}'s QR code`}>
+            <button onClick={() => onRegenerate(student)} disabled={busy || regenerateDisabled} className="grid size-8 place-items-center rounded-lg text-slate-400 hover:bg-amber-50 hover:text-amber-600 disabled:opacity-50 dark:hover:bg-amber-500/10" aria-label={`Regenerate ${student.name}'s QR code`} title={regenerateDisabled ? 'QR Code regeneration is disabled in System Settings' : `Regenerate ${student.name}'s QR code`}>
               {busy ? <LoaderCircle size={15} className="animate-spin" /> : <RefreshCw size={15} />}
             </button>
           </>

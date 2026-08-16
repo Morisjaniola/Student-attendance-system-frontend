@@ -1,4 +1,4 @@
-interface SettingToggleProps {
+interface ToggleSwitchProps {
   id: string
   label: string
   description: string
@@ -7,7 +7,16 @@ interface SettingToggleProps {
   onChange: (checked: boolean) => void
 }
 
-export function SettingToggle({ id, label, description, checked, disabled = false, onChange }: SettingToggleProps) {
+/**
+ * Reusable accessible switch used across System Settings.
+ *
+ * - Real <button role="switch"> with aria-checked
+ * - Keyboard focusable with a visible focus ring
+ * - ON: blue track, white knob on the right
+ * - OFF: muted gray track, knob on the left
+ * - Supports disabled state and a smooth knob transition
+ */
+export function ToggleSwitch({ id, label, description, checked, disabled = false, onChange }: ToggleSwitchProps) {
   return (
     <div className={`flex items-center justify-between gap-4 py-3.5 ${disabled ? 'opacity-55' : ''}`}>
       <label htmlFor={id} className="min-w-0 cursor-pointer">
@@ -33,3 +42,6 @@ export function SettingToggle({ id, label, description, checked, disabled = fals
     </div>
   )
 }
+
+/** @deprecated Use ToggleSwitch instead. */
+export const SettingToggle = ToggleSwitch

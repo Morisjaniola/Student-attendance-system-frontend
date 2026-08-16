@@ -7,11 +7,14 @@ import { ReportLoadingState } from '../components/reports/ReportLoadingState'
 import { ReportSummaryCards } from '../components/reports/ReportSummaryCards'
 import { ReportsTable } from '../components/reports/ReportsTable'
 import { ReportTypeSelector } from '../components/reports/ReportTypeSelector'
+import { useFormatPreferences } from '../hooks/useFormatting'
 import { exportReportExcel, exportReportPDF, reportTypeLabel, reportsService, summarizeReport } from '../services/reportsService'
 import { useReportsStore } from '../stores/reportsStore'
+import { formatDate, formatTime } from '../utils/format'
 
 export function ReportsPage() {
   const { filters, query, setType, setFilter, setQuery, reset } = useReportsStore()
+  const { timeFormat, dateFormat } = useFormatPreferences()
   const { data, isPending, isError, isFetching } = useQuery({ queryKey: ['reports', filters], queryFn: () => reportsService.fetch(filters), placeholderData: keepPreviousData })
 
   const visibleRecords = useMemo(() => {
@@ -53,7 +56,7 @@ export function ReportsPage() {
       <section className="reports-print-area">
         <header><h1>Student Attendance Monitoring System</h1><h2>{title}</h2><p>Period: {data.periodLabel}</p><p>Generated: {new Date().toLocaleString()}</p></header>
         <div className="print-summary"><span>Total Records: {summary.total}</span><span>Present: {summary.present}</span><span>Absent: {summary.absent}</span><span>Late: {summary.late}</span><span>Excused: {summary.excused}</span><span>Attendance Rate: {summary.attendanceRate}%</span></div>
-        <table><thead><tr><th>Student</th><th>Student ID</th><th>Course</th><th>Section</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody>{visibleRecords.map((record) => <tr key={record.id}><td>{record.student.name}</td><td>{record.student.studentId}</td><td>{record.student.courseCode}</td><td>{record.student.section}</td><td>{record.dateLabel}</td><td>{record.time}</td><td>{record.status}</td></tr>)}</tbody></table>
+        <table><thead><tr><th>Student</th><th>Student ID</th><th>Course</th><th>Section</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody>{visibleRecords.map((record) => <tr key={record.id}><td>{record.student.name}</td><td>{record.student.studentId}</td><td>{record.student.courseCode}</td><td>{record.student.section}</td><td>{formatDate(record.date, dateFormat)}</td><td>{formatTime(record.time, timeFormat)}</td><td>{record.status}</td></tr>)}</tbody></table>
         {!visibleRecords.length && <p>No attendance records match this report.</p>}
       </section>
     </>

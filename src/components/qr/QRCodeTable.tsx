@@ -18,10 +18,12 @@ interface QRCodeTableProps {
   onView: (student: StudentQRCode) => void
   onPrint: (student: StudentQRCode) => void
   onRegenerate: (student: StudentQRCode) => void
+  /** When false, regeneration is disabled by System Settings. */
+  regenerateDisabled?: boolean
   busyId?: string | null
 }
 
-export function QRCodeTable({ students, onGenerate, onView, onPrint, onRegenerate, busyId }: QRCodeTableProps) {
+export function QRCodeTable({ students, onGenerate, onView, onPrint, onRegenerate, regenerateDisabled = false, busyId }: QRCodeTableProps) {
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(PAGE_SIZE)
   const pageCount = Math.max(1, Math.ceil(students.length / pageSize))
@@ -95,7 +97,7 @@ export function QRCodeTable({ students, onGenerate, onView, onPrint, onRegenerat
                             <Printer size={15} />
                           </button>
                           <QRCodeDownloadButton student={student} variant="icon" />
-                          <button onClick={() => onRegenerate(student)} disabled={busy} className="grid size-8 place-items-center rounded-lg text-slate-400 transition hover:bg-amber-50 hover:text-amber-600 disabled:opacity-50 dark:hover:bg-amber-500/10" aria-label={`Regenerate ${student.name}'s QR code`} title="Regenerate QR code">
+                          <button onClick={() => onRegenerate(student)} disabled={busy || regenerateDisabled} className="grid size-8 place-items-center rounded-lg text-slate-400 transition hover:bg-amber-50 hover:text-amber-600 disabled:opacity-50 dark:hover:bg-amber-500/10" aria-label={`Regenerate ${student.name}'s QR code`} title={regenerateDisabled ? 'QR Code regeneration is disabled in System Settings' : 'Regenerate QR code'}>
                             {busy ? <LoaderCircle size={15} className="animate-spin" /> : <RefreshCw size={15} />}
                           </button>
                         </>
