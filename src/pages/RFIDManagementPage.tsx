@@ -11,6 +11,7 @@ import { Pagination } from '../components/tables/Pagination'
 import { rfidService } from '../services/rfidService'
 import { studentService } from '../services/studentService'
 import { useRFIDStore } from '../stores/rfidStore'
+import { useSystemSettings } from '../hooks/useSystemSettings'
 import type { RFIDAssignStudent, RFIDCard, RFIDStatus, RFIDStatusChange } from '../types/rfid'
 import type { Student } from '../types/student'
 
@@ -29,6 +30,7 @@ function toAssignStudent(student: Student): RFIDAssignStudent {
 
 export function RFIDManagementPage() {
   const queryClient = useQueryClient()
+  const rfidAttendanceEnabled = useSystemSettings((settings) => settings.qrRfid.rfidAttendanceEnabled)
   const { query, statusFilter, setQuery, setStatusFilter, resetFilters } = useRFIDStore()
   const [registerOpen, setRegisterOpen] = useState(false)
   const [assignTarget, setAssignTarget] = useState<RFIDCard | null>(null)
@@ -109,6 +111,12 @@ export function RFIDManagementPage() {
 
   return (
     <div className="space-y-6">
+      {!rfidAttendanceEnabled && (
+        <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200">
+          <AlertCircle size={15} className="mt-0.5 shrink-0" />
+          <span>RFID attendance is currently disabled in System Settings. Students cannot check in with RFID cards until it is re-enabled.</span>
+        </div>
+      )}
       <section className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[.15em] text-blue-600">RFID credential management</p>

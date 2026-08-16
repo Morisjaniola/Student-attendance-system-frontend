@@ -9,10 +9,14 @@ import { QRCodeViewer } from '../components/qr/QRCodeViewer'
 import { RegenerateQRCodeDialog } from '../components/qr/RegenerateQRCodeDialog'
 import { qrCodeService } from '../services/qrCodeService'
 import { useQRCodeStore } from '../stores/qrCodeStore'
+import { useSystemSettings } from '../hooks/useSystemSettings'
 import type { QRCodeStatus, StudentQRCode } from '../types/qrCode'
 
 export function QRCodeManagementPage() {
   const queryClient = useQueryClient()
+  const { qrRfid } = useSystemSettings()
+  const qrAttendanceEnabled = qrRfid.qrAttendanceEnabled
+  const allowRegeneration = qrRfid.allowQrRegeneration
   const { query, statusFilter, setQuery, setStatusFilter, resetFilters } = useQRCodeStore()
   const [viewer, setViewer] = useState<StudentQRCode | null>(null)
   const [regenerateTarget, setRegenerateTarget] = useState<StudentQRCode | null>(null)
@@ -70,6 +74,18 @@ export function QRCodeManagementPage() {
 
   return (
     <div className="space-y-6">
+      {!qrAttendanceEnabled && (
+        <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200">
+          <AlertCircle size={15} className="mt-0.5 shrink-0" />
+          <span>QR Code attendance is currently disabled in System Settings. Students cannot check in with QR codes until it is re-enabled.</span>
+        </div>
+      )}
+      {!allowRegeneration && (
+        <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200">
+          <AlertCircle size={15} className="mt-0.5 shrink-0" />
+          <span>QR Code regeneration is currently disabled in System Settings. Regeneration actions are hidden.</span>
+        </div>
+      )}
       <section className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[.15em] text-blue-600">QR credential management</p>
@@ -131,6 +147,7 @@ export function QRCodeManagementPage() {
           onView={setViewer}
           onPrint={setPrintStudent}
           onRegenerate={setRegenerateTarget}
+          regenerateDisabled={!allowRegeneration}
           busyId={generateMutation.isPending ? generateMutation.variables?.id : regenerateMutation.isPending ? regenerateMutation.variables?.id : null}
         />
       </div>
@@ -144,6 +161,7 @@ export function QRCodeManagementPage() {
             onView={setViewer}
             onPrint={setPrintStudent}
             onRegenerate={setRegenerateTarget}
+            regenerateDisabled={!allowRegeneration}
             busy={generateMutation.isPending && generateMutation.variables?.id === student.id || regenerateMutation.isPending && regenerateMutation.variables?.id === student.id}
           />
         ))}

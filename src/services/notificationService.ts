@@ -1,5 +1,6 @@
 import { attendanceService } from './attendanceService'
 import { notificationFromRecord, seedNotifications } from '../data/notificationData'
+import { readStoredSettings } from './settingsService'
 import { timeToMinutes } from './attendanceRecordsService'
 import type { AppNotification, NotificationFilter } from '../types/notification'
 
@@ -53,17 +54,30 @@ export function filterNotifications(
   })
 }
 
-/** Live records from Attendance Monitoring become fresh unread notifications. */
+/**
+ * Live records from Attendance Monitoring become fresh unread notifications,
+ * respecting the per-type toggles from System Settings (Late Student Alerts
+ * and Attendance Confirmation Notifications).
+ */
 function liveNotifications(): AppNotification[] {
+  const { notifications } = readStoredSettings()
   return attendanceService
     .sessionRecordsList()
-    .filter((record) => record.status === 'Late' || record.status === 'Present')
+    .filter((record) => {
+      if (record.status === 'Late') return notifications.lateStudentAlerts
+      if (record.status === 'Present') return notifications.attendanceConfirmationNotifications
+      return false
+    })
     .map((record) => notificationFromRecord(record, true))
 }
 
 export const notificationService = {
   async list(): Promise<AppNotification[]> {
     await delay()
-    return sortNotifications([...seedNotifications(), ...liveNotifications()])
+    // When notifications are disabled globally, generation stops but existing
+    // (seed) records remain visible — they are never deleted.
+    const { notifications } = readStoredSettings()
+    const live = notifications.notificationsEnabled ? liveNotifications() : []
+    return sortNotifications([...seedNotifications(), ...live])
   },
 }

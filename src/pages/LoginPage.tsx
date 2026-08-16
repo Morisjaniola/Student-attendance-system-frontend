@@ -12,6 +12,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { useSystemSettings } from '../hooks/useSystemSettings'
 import { useAuthStore } from '../stores/authStore'
 
 type FieldErrors = Partial<Record<'identifier' | 'password', string>>
@@ -19,6 +20,9 @@ type FieldErrors = Partial<Record<'identifier' | 'password', string>>
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { schoolInformation } = useSystemSettings()
+  const schoolName = schoolInformation.schoolName || 'Attendly'
+  const schoolLogo = schoolInformation.logoUrl
   const { isAuthenticated, user, login } = useAuthStore()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
@@ -91,11 +95,11 @@ export function LoginPage() {
 
           {/* Brand */}
           <header className="relative flex items-center gap-3.5">
-            <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-white/15 shadow-lg shadow-blue-950/20 ring-1 ring-white/25 backdrop-blur">
-              <GraduationCap size={26} aria-hidden="true" />
+            <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white/15 shadow-lg shadow-blue-950/20 ring-1 ring-white/25 backdrop-blur">
+              {schoolLogo ? <img src={schoolLogo} alt="" className="size-full object-cover" /> : <GraduationCap size={26} aria-hidden="true" />}
             </div>
             <div className="min-w-0">
-              <p className="text-xl font-bold leading-tight tracking-tight">Attendly</p>
+              <p className="truncate text-xl font-bold leading-tight tracking-tight">{schoolName}</p>
               <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-100/90">
                 Student Attendance Monitoring System
               </p>
@@ -155,10 +159,10 @@ export function LoginPage() {
           <div className="w-full max-w-md">
             {/* Mobile-only brand header */}
             <div className="mb-10 flex flex-col items-center text-center md:hidden">
-              <div className="grid size-12 place-items-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
-                <GraduationCap size={26} aria-hidden="true" />
+              <div className="grid size-12 place-items-center overflow-hidden rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
+                {schoolLogo ? <img src={schoolLogo} alt="" className="size-full object-cover" /> : <GraduationCap size={26} aria-hidden="true" />}
               </div>
-              <p className="mt-3 text-lg font-bold tracking-tight">Attendly</p>
+              <p className="mt-3 truncate text-lg font-bold tracking-tight">{schoolName}</p>
               <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
                 Student Attendance Monitoring System
               </p>

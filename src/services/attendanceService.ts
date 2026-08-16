@@ -1,6 +1,7 @@
 import { initialQRCodes } from '../data/qrCodeData'
 import { initialRFIDCards } from '../data/rfidData'
 import { mockStudents } from '../data/studentData'
+import { readStoredSettings } from './settingsService'
 import type { AttendanceMethod, AttendanceStatus } from '../types/dashboard'
 import type { AttendanceRecord, AttendanceValidationResult, DuplicateRecord, ScannedStudent } from '../types/attendance'
 import type { Student } from '../types/student'
@@ -8,15 +9,16 @@ import type { Student } from '../types/student'
 // ---------------------------------------------------------------------------
 // Live Scanning service (mock frontend implementation).
 //
-// Replace the in-memory session store below with PHP API calls when the
-// backend is ready. Keep the same method signatures so the view layer does
-// not change:
+// Attendance rules (attendance window, late threshold, allowed methods) are
+// read from System Settings at scan time, so the configured values are always
+// the ones applied. Replace the in-memory session store below with PHP API
+// calls when the backend is ready. Keep the same method signatures so the
+// view layer does not change:
 //
 //   React  →  attendanceService  →  PHP API  →  MySQL
 // ---------------------------------------------------------------------------
 
-/** Minutes past midnight after which a scan is marked Late (project rule: after 8:00 AM). */
-const LATE_CUTOFF_MINUTES = 8 * 60
+const asMinutes = (time: string) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5))
 
 /** One attendance record per student for the current session (day). */
 let sessionRecords = new Map<string, AttendanceRecord>()
@@ -73,11 +75,18 @@ function resolveQR(qrValue: string): ResolvedCredential {
   return { ok: true, student }
 }
 
-function resolveRFID(cardNumber: string): ResolvedCredential {
+/**
+ * Resolves an RFID card number to a student.
+ * When card validation is enabled (System Settings), inactive cards are
+ * rejected. When disabled, the card-status gate is relaxed, but the card must
+ * still be registered, assigned, and linked to an Active student account so
+ * authentication is never bypassed.
+ */
+function resolveRFID(cardNumber: string, validate: boolean): ResolvedCredential {
   const card = initialRFIDCards.find((record) => record.cardNumber === cardNumber)
   if (!card) return { ok: false, message: 'Student not found.' }
   if (!card.studentId) return { ok: false, message: 'RFID card is not assigned.' }
-  if (card.status === 'Inactive') return { ok: false, message: 'RFID card is inactive.' }
+  if (validate && card.status === 'Inactive') return { ok: false, message: 'RFID card is inactive.' }
 
   const student = mockStudents.find((record) => record.studentId === card.studentId)
   if (!student) return { ok: false, message: 'Student not found.' }
@@ -96,12 +105,36 @@ export const attendanceService = {
     const value = credential.trim()
     if (!value) return { outcome: 'invalid', message: 'Nothing to scan. Enter a QR code or RFID card number.' }
 
-    const resolved = method === 'RFID' ? resolveRFID(value) : resolveQR(value)
+    // Methods are gated by System Settings (QR / RFID toggles).
+    const { qrRfid, attendance } = readStoredSettings()
+    if (method === 'QR Code' && !qrRfid.qrAttendanceEnabled) {
+      return { outcome: 'invalid', message: 'QR Code attendance is currently disabled in System Settings.' }
+    }
+    if (method === 'RFID' && !qrRfid.rfidAttendanceEnabled) {
+      return { outcome: 'invalid', message: 'RFID attendance is currently disabled in System Settings.' }
+    }
+
+    const resolved = method === 'RFID' ? resolveRFID(value, qrRfid.validateRfid) : resolveQR(value)
     if (!resolved.ok) return { outcome: 'invalid', message: resolved.message }
 
-    // Prevent duplicate attendance: one record per student per session (day).
     const now = new Date()
     const today = isoDate(now)
+    const minutes = now.getHours() * 60 + now.getMinutes()
+
+    // Attendance window validation from System Settings.
+    if (minutes < asMinutes(attendance.attendanceStartTime)) {
+      return { outcome: 'invalid', message: `Attendance has not started yet. The attendance window opens at ${attendance.attendanceStartTime}.` }
+    }
+    if (minutes > asMinutes(attendance.attendanceEndTime)) {
+      return { outcome: 'invalid', message: `Attendance has ended for today. The attendance window closed at ${attendance.attendanceEndTime}.` }
+    }
+
+    const status: AttendanceStatus = minutes > asMinutes(attendance.lateThreshold) ? 'Late' : 'Present'
+    if (status === 'Late' && !attendance.allowLateAttendance) {
+      return { outcome: 'invalid', message: 'Late attendance is currently disabled in System Settings.' }
+    }
+
+    // Prevent duplicate attendance: one record per student per session (day).
     const existing = sessionRecords.get(resolved.student.studentId)
     if (existing && existing.date === today) {
       const previous: DuplicateRecord = {
@@ -113,8 +146,6 @@ export const attendanceService = {
       return { outcome: 'duplicate', previous }
     }
 
-    const minutes = now.getHours() * 60 + now.getMinutes()
-    const status: AttendanceStatus = minutes > LATE_CUTOFF_MINUTES ? 'Late' : 'Present'
     const record: AttendanceRecord = {
       id: crypto.randomUUID(),
       student: toScannedStudent(resolved.student),

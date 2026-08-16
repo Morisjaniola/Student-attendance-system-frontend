@@ -2,13 +2,17 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AlertCircle, CalendarDays, CheckCircle2, Clock3, LoaderCircle, RefreshCw, UsersRound } from 'lucide-react'
 import { AttendanceSummaryStats } from '../components/attendanceRecords/AttendanceSummaryStats'
 import { AttendanceMethodBadge, AttendanceStatusBadge } from '../components/attendanceRecords/AttendanceBadges'
+import { useFormatPreferences } from '../hooks/useFormatting'
 import { attendanceRecordsService } from '../services/attendanceRecordsService'
+import { formatDate, formatTime } from '../utils/format'
 import type { AttendanceRecord } from '../types/attendance'
 import type { AttendanceStatus } from '../types/dashboard'
+import type { DateFormat, TimeFormat } from '../types/settings'
 
 /** Dashboard for viewing current attendance activity; capture happens in Live Scanning. */
 export function AttendanceMonitoringPage() {
   const queryClient = useQueryClient()
+  const { timeFormat, dateFormat } = useFormatPreferences()
   const { data: records = [], isPending, isError, isFetching } = useQuery({
     queryKey: ['attendance-records'],
     queryFn: attendanceRecordsService.list,
@@ -53,7 +57,7 @@ export function AttendanceMonitoringPage() {
           <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">{records.length} total</span>
         </div>
         <div className="divide-y divide-slate-100 dark:divide-slate-800">
-          {records.slice(0, 6).map((record) => <RecentAttendance key={record.id} record={record} />)}
+          {records.slice(0, 6).map((record) => <RecentAttendance key={record.id} record={record} timeFormat={timeFormat} dateFormat={dateFormat} />)}
           {!records.length && <div className="px-6 py-12 text-center text-sm text-slate-400">No attendance records are available yet.</div>}
         </div>
       </section>
@@ -71,8 +75,8 @@ function MonitoringStat({ label, value, icon: Icon, tone }: { label: string; val
   return <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-5"><div className="flex items-start justify-between gap-3"><div><p className="text-xs font-semibold text-slate-500">{label}</p><p className="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-[28px]">{value}</p><p className="mt-1 text-[11px] text-slate-400">Recorded today</p></div><span className={`grid size-10 place-items-center rounded-xl ${tones[tone]}`}><Icon size={20} /></span></div></article>
 }
 
-function RecentAttendance({ record }: { record: AttendanceRecord }) {
-  return <article className="flex items-center gap-3 px-5 py-4 sm:px-6"><span className={`grid size-10 shrink-0 place-items-center overflow-hidden rounded-xl text-[10px] font-bold ${record.student.avatarColor}`}>{record.student.photo ? <img src={record.student.photo} alt="" className="size-full object-cover" /> : record.student.initials}</span><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold text-slate-700 dark:text-slate-200">{record.student.name}</p><p className="mt-0.5 truncate text-[11px] text-slate-400">{record.student.studentId} · {record.student.courseCode} · {record.student.section}</p></div><div className="hidden text-right sm:block"><p className="font-mono text-xs font-semibold text-slate-600 dark:text-slate-300">{record.time}</p><p className="mt-0.5 text-[10px] text-slate-400">{record.dateLabel}</p></div><div className="flex shrink-0 flex-col items-end gap-1.5"><AttendanceStatusBadge status={record.status} /><AttendanceMethodBadge method={record.method} /></div></article>
+function RecentAttendance({ record, timeFormat, dateFormat }: { record: AttendanceRecord; timeFormat: TimeFormat; dateFormat: DateFormat }) {
+  return <article className="flex items-center gap-3 px-5 py-4 sm:px-6"><span className={`grid size-10 shrink-0 place-items-center overflow-hidden rounded-xl text-[10px] font-bold ${record.student.avatarColor}`}>{record.student.photo ? <img src={record.student.photo} alt="" className="size-full object-cover" /> : record.student.initials}</span><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold text-slate-700 dark:text-slate-200">{record.student.name}</p><p className="mt-0.5 truncate text-[11px] text-slate-400">{record.student.studentId} · {record.student.courseCode} · {record.student.section}</p></div><div className="hidden text-right sm:block"><p className="font-mono text-xs font-semibold text-slate-600 dark:text-slate-300">{formatTime(record.time, timeFormat)}</p><p className="mt-0.5 text-[10px] text-slate-400">{formatDate(record.date, dateFormat)}</p></div><div className="flex shrink-0 flex-col items-end gap-1.5"><AttendanceStatusBadge status={record.status} /><AttendanceMethodBadge method={record.method} /></div></article>
 }
 
 function LoadingState() {
