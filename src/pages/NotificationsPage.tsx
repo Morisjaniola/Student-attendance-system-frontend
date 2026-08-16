@@ -3,11 +3,13 @@ import { AlertCircle, Bell, BellRing, CheckCheck, LoaderCircle } from 'lucide-re
 import { useMemo } from 'react'
 import { NotificationFilters } from '../components/notifications/NotificationFilters'
 import { NotificationList } from '../components/notifications/NotificationList'
+import { useSystemSettings } from '../hooks/useSystemSettings'
 import { NOTIFICATIONS_QUERY_KEY, NOTIFICATIONS_STALE_TIME, filterNotifications, isNotificationUnread, notificationService } from '../services/notificationService'
 import { useNotificationStore } from '../stores/notificationStore'
 
 export function NotificationsPage() {
   const { filter, overrides, setFilter, markRead, markUnread, markAllRead } = useNotificationStore()
+  const notificationsEnabled = useSystemSettings((settings) => settings.notifications.notificationsEnabled)
 
   const { data: notifications = [], isPending, isError } = useQuery({
     queryKey: NOTIFICATIONS_QUERY_KEY,
@@ -47,6 +49,12 @@ export function NotificationsPage() {
 
   return (
     <div className="space-y-6">
+      {!notificationsEnabled && (
+        <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200">
+          <AlertCircle size={15} className="mt-0.5 shrink-0" />
+          <span>Notifications are currently disabled in System Settings. New attendance alerts will not be generated until notifications are re-enabled. Existing notifications remain visible.</span>
+        </div>
+      )}
       <section className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[.15em] text-blue-600">Alerts &amp; updates</p>

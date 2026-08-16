@@ -23,11 +23,42 @@ export function SystemSettingsPage() {
   const refresh = async () => { await queryClient.invalidateQueries({ queryKey: ['system-settings'] }) }
   const showError = (error: unknown) => setNotice({ tone: 'error', message: error instanceof Error ? error.message : 'Unable to save settings. Please try again.' })
 
-  const schoolMutation = useMutation({ mutationFn: (value: SchoolInformation) => settingsService.saveSchoolInformation(value), onSuccess: async () => { await refresh(); setNotice({ tone: 'success', message: 'School information saved successfully.' }) }, onError: showError })
-  const attendanceMutation = useMutation({ mutationFn: (value: AttendanceSettings) => settingsService.saveAttendance(value), onSuccess: async () => { await refresh(); setNotice({ tone: 'success', message: 'Attendance settings saved successfully.' }) }, onError: showError })
-  const qrRfidMutation = useMutation({ mutationFn: (value: QrRfidSettings) => settingsService.saveQrRfid(value), onSuccess: async () => { await refresh(); setNotice({ tone: 'success', message: 'QR / RFID settings saved successfully.' }) }, onError: showError })
-  const notificationsMutation = useMutation({ mutationFn: (value: NotificationSettings) => settingsService.saveNotifications(value), onSuccess: async () => { await refresh(); setNotice({ tone: 'success', message: 'Notification settings saved successfully.' }) }, onError: showError })
-  const preferencesMutation = useMutation({ mutationFn: (value: SystemPreferences) => settingsService.savePreferences(value), onSuccess: async (preferences) => { setThemePreference(preferences.theme); await refresh(); setNotice({ tone: 'success', message: 'System preferences saved successfully.' }) }, onError: showError })
+  const schoolMutation = useMutation({
+    mutationFn: (value: SchoolInformation) => settingsService.saveSchoolInformation(value),
+    onSuccess: async (schoolInformation) => { useSettingsStore.getState().setSettings({ ...useSettingsStore.getState().settings, schoolInformation }); await refresh(); setNotice({ tone: 'success', message: 'School information saved successfully.' }) },
+    onError: showError,
+  })
+  const attendanceMutation = useMutation({
+    mutationFn: (value: AttendanceSettings) => settingsService.saveAttendance(value),
+    onSuccess: async (attendance) => { useSettingsStore.getState().setSettings({ ...useSettingsStore.getState().settings, attendance }); await refresh(); setNotice({ tone: 'success', message: 'Attendance settings saved successfully.' }) },
+    onError: showError,
+  })
+  const qrRfidMutation = useMutation({
+    mutationFn: (value: QrRfidSettings) => settingsService.saveQrRfid(value),
+    onSuccess: async (qrRfid) => { useSettingsStore.getState().setSettings({ ...useSettingsStore.getState().settings, qrRfid }); await refresh(); setNotice({ tone: 'success', message: 'QR / RFID settings saved successfully.' }) },
+    onError: showError,
+  })
+  const notificationsMutation = useMutation({
+    mutationFn: (value: NotificationSettings) => settingsService.saveNotifications(value),
+    onSuccess: async (notifications) => {
+      useSettingsStore.getState().setSettings({ ...useSettingsStore.getState().settings, notifications })
+      // Refresh notification badges immediately so disabled state is reflected at once.
+      await queryClient.invalidateQueries({ queryKey: ['notifications'] })
+      await refresh()
+      setNotice({ tone: 'success', message: 'Notification settings saved successfully.' })
+    },
+    onError: showError,
+  })
+  const preferencesMutation = useMutation({
+    mutationFn: (value: SystemPreferences) => settingsService.savePreferences(value),
+    onSuccess: async (preferences) => {
+      useSettingsStore.getState().setSettings({ ...useSettingsStore.getState().settings, preferences })
+      setThemePreference(preferences.theme)
+      await refresh()
+      setNotice({ tone: 'success', message: 'System preferences saved successfully.' })
+    },
+    onError: showError,
+  })
 
   if (isPending || !draft) return <div className="grid min-h-[65vh] place-items-center"><p className="flex items-center gap-3 text-sm font-medium text-slate-400"><LoaderCircle size={21} className="animate-spin text-blue-600" />Loading system settings…</p></div>
   if (isError) return <div className="grid min-h-[65vh] place-items-center"><div className="max-w-sm rounded-2xl border border-rose-100 bg-rose-50 p-6 text-center text-sm text-rose-700 dark:border-rose-900/50 dark:bg-rose-500/10 dark:text-rose-300"><AlertCircle className="mx-auto mb-3" />System settings could not be loaded. Please refresh and try again.</div></div>

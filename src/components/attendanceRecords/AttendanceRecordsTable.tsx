@@ -1,7 +1,8 @@
 import { ClipboardList, LoaderCircle, Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import { useFormatPreferences } from '../../hooks/useFormatting'
 import type { AttendanceRecord } from '../../types/attendanceRecord'
-import { initials } from '../../utils/format'
+import { formatDate, formatTime, initials } from '../../utils/format'
 import { Pagination } from '../tables/Pagination'
 import { AttendanceMethodBadge, AttendanceStatusBadge } from './AttendanceBadges'
 
@@ -17,6 +18,7 @@ interface AttendanceRecordsTableProps {
 }
 
 export function AttendanceRecordsTable({ records, canEdit, canDelete, busyRecordId, onEdit, onDelete }: AttendanceRecordsTableProps) {
+  const { timeFormat, dateFormat } = useFormatPreferences()
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(PAGE_SIZE)
   const pageCount = Math.max(1, Math.ceil(records.length / pageSize))
@@ -62,8 +64,8 @@ export function AttendanceRecordsTable({ records, canEdit, canDelete, busyRecord
                   </td>
                   <td className="px-3 py-3.5">{record.student.yearLevel}</td>
                   <td className="px-3 py-3.5">{record.student.section}</td>
-                  <td className="px-3 py-3.5 text-[11px] text-slate-400">{record.dateLabel}</td>
-                  <td className="px-3 py-3.5 font-mono text-[11px] text-slate-500 dark:text-slate-400">{record.time}</td>
+                  <td className="px-3 py-3.5 text-[11px] text-slate-400">{formatDate(record.date, dateFormat)}</td>
+                  <td className="px-3 py-3.5 font-mono text-[11px] text-slate-500 dark:text-slate-400">{formatTime(record.time, timeFormat)}</td>
                   <td className="px-3 py-3.5"><AttendanceMethodBadge method={record.method} /></td>
                   <td className="px-3 py-3.5"><AttendanceStatusBadge status={record.status} /></td>
                   {showActions && (

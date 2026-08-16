@@ -1,6 +1,7 @@
 import { CircleCheck, X } from 'lucide-react'
+import { useFormatPreferences } from '../../hooks/useFormatting'
 import type { AttendanceRecord } from '../../types/attendance'
-import { statusStyles } from '../../utils/format'
+import { formatDate, formatTime, statusStyles } from '../../utils/format'
 
 interface AttendanceConfirmationProps {
   record: AttendanceRecord | null
@@ -9,6 +10,7 @@ interface AttendanceConfirmationProps {
 }
 
 export function AttendanceConfirmation({ record, open, onClose }: AttendanceConfirmationProps) {
+  const { timeFormat, dateFormat } = useFormatPreferences()
   if (!open || !record) return null
   const { student } = record
 
@@ -41,11 +43,11 @@ export function AttendanceConfirmation({ record, open, onClose }: AttendanceConf
           </div>
           <div>
             <dt className="text-[10px] text-slate-400">Date</dt>
-            <dd className="mt-0.5 font-semibold text-slate-700 dark:text-slate-200">{record.dateLabel}</dd>
+            <dd className="mt-0.5 font-semibold text-slate-700 dark:text-slate-200">{formatDate(record.date, dateFormat)}</dd>
           </div>
           <div>
             <dt className="text-[10px] text-slate-400">Time</dt>
-            <dd className="mt-0.5 font-semibold text-slate-700 dark:text-slate-200">{record.time}</dd>
+            <dd className="mt-0.5 font-semibold text-slate-700 dark:text-slate-200">{formatTime(record.time, timeFormat)}</dd>
           </div>
           <div>
             <dt className="text-[10px] text-slate-400">Status</dt>

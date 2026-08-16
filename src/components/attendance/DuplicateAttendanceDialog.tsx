@@ -1,5 +1,7 @@
 import { Clock3, X } from 'lucide-react'
+import { useFormatPreferences } from '../../hooks/useFormatting'
 import type { DuplicateRecord } from '../../types/attendance'
+import { formatTime } from '../../utils/format'
 
 interface DuplicateAttendanceDialogProps {
   previous: DuplicateRecord | null
@@ -8,6 +10,7 @@ interface DuplicateAttendanceDialogProps {
 }
 
 export function DuplicateAttendanceDialog({ previous, open, onClose }: DuplicateAttendanceDialogProps) {
+  const { timeFormat } = useFormatPreferences()
   if (!open || !previous) return null
 
   return (
@@ -28,7 +31,7 @@ export function DuplicateAttendanceDialog({ previous, open, onClose }: Duplicate
           <dl className="mt-3 grid grid-cols-2 gap-3">
             <div>
               <dt className="text-[10px] text-slate-400">Previous time</dt>
-              <dd className="mt-0.5 font-semibold text-slate-700 dark:text-slate-200">{previous.time}</dd>
+              <dd className="mt-0.5 font-semibold text-slate-700 dark:text-slate-200">{formatTime(previous.time, timeFormat)}</dd>
             </div>
             <div>
               <dt className="text-[10px] text-slate-400">Attendance method</dt>

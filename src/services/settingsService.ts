@@ -7,7 +7,12 @@ const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/
 
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 
-function readStoredSettings(): SystemSettings {
+/**
+ * Single source of truth for persisted settings. The zustand settings store
+ * (reactive state) and every service that needs current rules read from here,
+ * so all modules always agree on the latest saved configuration.
+ */
+export function readStoredSettings(): SystemSettings {
   if (typeof window === 'undefined') return clone(defaultSystemSettings)
   try {
     const stored = window.localStorage.getItem(SETTINGS_STORAGE_KEY)
@@ -18,10 +23,8 @@ function readStoredSettings(): SystemSettings {
   }
 }
 
-let settings = readStoredSettings()
-
-function persist() {
-  if (typeof window !== 'undefined') window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings))
+export function persistSystemSettings(next: SystemSettings): void {
+  if (typeof window !== 'undefined') window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(next))
 }
 
 const delay = (milliseconds = 220) => new Promise<void>((resolve) => window.setTimeout(resolve, milliseconds))
@@ -49,45 +52,48 @@ function validateAttendance(values: AttendanceSettings): string | null {
 export const settingsService = {
   async get(): Promise<SystemSettings> {
     await delay()
-    return clone(settings)
+    return clone(readStoredSettings())
   },
 
   async saveSchoolInformation(values: SchoolInformation): Promise<SchoolInformation> {
     await delay()
     const error = validateSchoolInformation(values)
     if (error) throw new Error(error)
-    settings = { ...settings, schoolInformation: { ...values, schoolName: values.schoolName.trim(), schoolAddress: values.schoolAddress.trim(), contactNumber: values.contactNumber.trim(), email: values.email.trim() } }
-    persist()
-    return clone(settings.schoolInformation)
+    const next: SystemSettings = {
+      ...readStoredSettings(),
+      schoolInformation: { ...values, schoolName: values.schoolName.trim(), schoolAddress: values.schoolAddress.trim(), contactNumber: values.contactNumber.trim(), email: values.email.trim() },
+    }
+    persistSystemSettings(next)
+    return clone(next.schoolInformation)
   },
 
   async saveAttendance(values: AttendanceSettings): Promise<AttendanceSettings> {
     await delay()
     const error = validateAttendance(values)
     if (error) throw new Error(error)
-    settings = { ...settings, attendance: { ...values } }
-    persist()
-    return clone(settings.attendance)
+    const next: SystemSettings = { ...readStoredSettings(), attendance: { ...values } }
+    persistSystemSettings(next)
+    return clone(next.attendance)
   },
 
   async saveQrRfid(values: QrRfidSettings): Promise<QrRfidSettings> {
     await delay()
-    settings = { ...settings, qrRfid: { ...values } }
-    persist()
-    return clone(settings.qrRfid)
+    const next: SystemSettings = { ...readStoredSettings(), qrRfid: { ...values } }
+    persistSystemSettings(next)
+    return clone(next.qrRfid)
   },
 
   async saveNotifications(values: NotificationSettings): Promise<NotificationSettings> {
     await delay()
-    settings = { ...settings, notifications: { ...values } }
-    persist()
-    return clone(settings.notifications)
+    const next: SystemSettings = { ...readStoredSettings(), notifications: { ...values } }
+    persistSystemSettings(next)
+    return clone(next.notifications)
   },
 
   async savePreferences(values: SystemPreferences): Promise<SystemPreferences> {
     await delay()
-    settings = { ...settings, preferences: { ...values } }
-    persist()
-    return clone(settings.preferences)
+    const next: SystemSettings = { ...readStoredSettings(), preferences: { ...values } }
+    persistSystemSettings(next)
+    return clone(next.preferences)
   },
 }
