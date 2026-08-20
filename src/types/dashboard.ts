@@ -69,6 +69,10 @@ export interface SchoolEvent {
   time: string
   location: string
   countdown: string
+  purpose?: string
+  status?: string
+  /** Event-specific detail rows shown on the details page. */
+  details?: { label: string; value: string }[]
 }
 
 export interface NotificationItem {
