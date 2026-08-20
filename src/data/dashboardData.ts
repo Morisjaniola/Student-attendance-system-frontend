@@ -164,10 +164,27 @@ export const dashboardData: DashboardData = {
     { course: 'BS Psych', rate: 89, students: 167 },
   ],
   events: [
-    { id: 'e-01', type: 'Seminar', title: 'Career Readiness Seminar', date: 'August 22, 2026', time: '1:00 PM – 4:00 PM', location: 'University Auditorium', countdown: 'in 2 days' },
-    { id: 'e-02', type: 'Holiday', title: 'National Heroes Day', date: 'August 31, 2026', time: 'All day', location: 'Campus-wide', countdown: 'in 11 days' },
-    { id: 'e-03', type: 'Examination', title: 'Preliminary Examinations', date: 'September 7–11, 2026', time: 'Per class schedule', location: 'Assigned rooms', countdown: 'in 18 days' },
-    { id: 'e-04', type: 'Event', title: 'College Week Opening', date: 'September 14, 2026', time: '8:00 AM', location: 'Activity Center', countdown: 'in 25 days' },
+    { id: 'e-01', type: 'Seminar', title: 'Career Readiness Seminar', date: 'August 22, 2026', time: '1:00 PM – 4:00 PM', location: 'University Auditorium', countdown: 'in 2 days', purpose: 'Prepare students for future employment through career guidance, resume preparation, interview skills, professional communication, and workplace readiness.', status: 'Upcoming', details: [
+      { label: 'Registered Attendees', value: '320' },
+      { label: 'Checked-in Students', value: '0' },
+      { label: 'Attendance Completion', value: 'Pending' },
+    ] },
+    { id: 'e-02', type: 'Holiday', title: 'National Heroes Day', date: 'August 31, 2026', time: 'All day', location: 'Campus-wide', countdown: 'in 11 days', purpose: 'Honor Philippine national heroes and promote patriotism, historical awareness, and appreciation of their contributions.', status: 'Holiday – No Regular Classes', details: [
+      { label: 'Holiday Status', value: 'Official School Holiday' },
+      { label: 'Attendance Requirement', value: 'None — no regular class attendance unless an official school activity is scheduled' },
+    ] },
+    { id: 'e-03', type: 'Examination', title: 'Preliminary Examinations', date: 'September 7–11, 2026', time: 'Per class schedule', location: 'Assigned rooms', countdown: 'in 18 days', purpose: 'Conduct the official preliminary examinations to evaluate students\u2019 academic progress during the first grading period.', status: 'Upcoming', details: [
+      { label: 'Present', value: '—' },
+      { label: 'Late', value: '—' },
+      { label: 'Absent', value: '—' },
+      { label: 'Excused', value: '—' },
+      { label: 'Total Students', value: '1,248' },
+    ] },
+    { id: 'e-04', type: 'Event', title: 'College Week Opening', date: 'September 14, 2026', time: '8:00 AM', location: 'Activity Center', countdown: 'in 25 days', purpose: 'Officially launch College Week through opening ceremonies, student activities, performances, and organization participation.', status: 'Upcoming', details: [
+      { label: 'Participant Attendance', value: '0 / 1,248' },
+      { label: 'Organization Participation', value: 'Pending' },
+      { label: 'Event Check-in Records', value: '0' },
+    ] },
   ],
   notifications: [
     { id: 'n-01', type: 'late', title: 'Late student detected', description: 'Angela Santos checked in 31 minutes after class start.', time: '3 min ago', unread: true },

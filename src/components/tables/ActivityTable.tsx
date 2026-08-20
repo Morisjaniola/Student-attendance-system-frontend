@@ -14,7 +14,7 @@ export function ActivityTable({ data, onView }: { data: AttendanceActivity[]; on
   const [page, setPage] = useState(1)
   const filtered = useMemo(() => {
     const query = activitySearch.trim().toLowerCase()
-    return data.filter((student) => (statusFilter === 'All' || student.status === statusFilter) && (!query || [student.name, student.studentId, student.course, student.section].join(' ').toLowerCase().includes(query))).sort((a, b) => {
+    return data.filter((student) => (statusFilter === 'All' || student.status === statusFilter) && (!query || [student.name, student.studentId, student.course, student.section, student.year, student.method, student.device].join(' ').toLowerCase().includes(query))).sort((a, b) => {
       const aValue = a[sort.key].toLowerCase()
       const bValue = b[sort.key].toLowerCase()
       return (aValue > bValue ? 1 : aValue < bValue ? -1 : 0) * (sort.ascending ? 1 : -1)
