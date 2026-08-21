@@ -1,4 +1,5 @@
 import { initialRFIDCards } from '../data/rfidData'
+import { studentService } from './studentService'
 import type { RFIDAssignStudent, RFIDCard, RFIDStatus } from '../types/rfid'
 
 // ---------------------------------------------------------------------------
@@ -22,10 +23,66 @@ function clone(card: RFIDCard): RFIDCard {
   return { ...card }
 }
 
+function randomHex(): string {
+  return Math.floor(Math.random() * 256).toString(16).toUpperCase().padStart(2, '0')
+}
+
 export const rfidService = {
+  /** Generates a unique RFID card number in XX:XX:XX:XX:XX format. */
+  async generateUniqueCardNumber(): Promise<string> {
+    await delay()
+    // Gather every card number already in use (across all statuses).
+    const used = new Set(records.map((r) => r.cardNumber.toLowerCase()))
+
+    // Also check the student directory so a freshly registered student's
+    // rfidNumber that hasn't been saved to the RFID store yet is caught.
+    const students = await studentService.list()
+    for (const s of students) {
+      if (s.rfidNumber) used.add(s.rfidNumber.toLowerCase())
+    }
+
+    // Retry until unique (astronomically unlikely to need more than one pass).
+    let candidate: string
+    let attempts = 0
+    do {
+      candidate = `${randomHex()}:${randomHex()}:${randomHex()}:${randomHex()}:${randomHex()}`
+      attempts++
+    } while (used.has(candidate.toLowerCase()) && attempts < 50)
+
+    if (attempts >= 50) throw new Error('Unable to generate a unique RFID number. Please try again.')
+    return candidate
+  },
+
   /** Returns a snapshot of every RFID card record. */
   async list(): Promise<RFIDCard[]> {
     await delay()
+
+    // Sync student info on assigned cards so name / course / section changes
+    // made in Student Management are reflected immediately.
+    const students = await studentService.list()
+    const studentById = new Map(students.map((s) => [s.id, s]))
+    const studentByStudentId = new Map(students.map((s) => [s.studentId, s]))
+
+    for (const card of records) {
+      if (!card.studentId) continue
+      // Try to match by the student's internal id stored in card (via assign)
+      const student = studentById.get(card.studentId) ?? studentByStudentId.get(card.studentId)
+      if (!student) continue
+      const fullName = `${student.firstName} ${student.middleName ? `${student.middleName[0]}. ` : ''}${student.lastName}`
+      card.studentName = fullName
+      card.avatarColor = student.avatarColor
+      card.photo = student.photo
+      card.courseCode = student.courseCode
+      card.course = student.course
+      card.yearLevel = student.yearLevel
+      card.section = student.section
+      // Source of truth: always use the student's rfidNumber so both modules
+      // display the same value.
+      if (student.rfidNumber) {
+        card.cardNumber = student.rfidNumber
+      }
+    }
+
     return records.map(clone)
   },
 
@@ -79,6 +136,10 @@ export const rfidService = {
       section: student.section,
     }
     records = records.map((record) => (record.id === cardId ? updated : record))
+
+    // Sync the student's rfidNumber so Student Management reflects the assignment.
+    await studentService.updateRfid(student.id, current.cardNumber)
+
     return clone(updated)
   },
 
@@ -124,6 +185,14 @@ export const rfidService = {
       section: current.section,
     }
     records = [...records.map((record) => (record.id === cardId ? deactivated : record)), replacement]
+
+    // Sync the student's rfidNumber with the new card number.
+    const students = await studentService.list()
+    const studentRecord = students.find((s) => s.studentId === current.studentId)
+    if (studentRecord) {
+      await studentService.updateRfid(studentRecord.id, newCardNumber)
+    }
+
     return clone(replacement)
   },
 

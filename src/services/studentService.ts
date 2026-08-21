@@ -34,4 +34,13 @@ export const studentService = {
     await delay()
     records = records.map((student) => ids.includes(student.id) ? { ...student, status, deletedAt: status === 'Archived' ? new Date().toISOString().slice(0, 10) : undefined, timeline: [{ id: crypto.randomUUID(), title: `Status changed to ${status}`, description: 'Status updated by an administrator.', date: 'Just now', type: 'status' }, ...student.timeline] } : student)
   },
+  /** Updates the student's rfidNumber field to keep it in sync with RFID card assignments. */
+  async updateRfid(id: string, rfidNumber: string): Promise<Student> {
+    await delay()
+    const current = records.find((student) => student.id === id)
+    if (!current) throw new Error('Student record was not found.')
+    const updated: Student = { ...current, rfidNumber }
+    records = records.map((student) => (student.id === id ? updated : student))
+    return updated
+  },
 }
