@@ -1,4 +1,5 @@
 import { initialQRCodes } from '../data/qrCodeData'
+import { readStoredSettings } from './settingsService'
 import type { StudentQRCode } from '../types/qrCode'
 
 // ---------------------------------------------------------------------------
@@ -57,6 +58,11 @@ export const qrCodeService = {
   /** Replaces an existing QR code with a brand-new unique payload. */
   async regenerate(studentId: string): Promise<StudentQRCode> {
     await delay()
+    // Hard gate so users cannot bypass the System Settings preference.
+    const { qrRfid } = readStoredSettings()
+    if (!qrRfid.allowQrRegeneration) {
+      throw new Error('QR Code regeneration is currently disabled in System Settings.')
+    }
     const current = records.find((record) => record.id === studentId)
     if (!current) throw new Error('Student record was not found.')
 

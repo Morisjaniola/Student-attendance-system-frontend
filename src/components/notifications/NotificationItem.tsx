@@ -1,6 +1,8 @@
 import { BellRing, CalendarDays, CheckCheck, Clock, CircleCheck, TriangleAlert } from 'lucide-react'
+import { useFormatPreferences } from '../../hooks/useFormatting'
 import { NotificationBadge } from './NotificationBadge'
 import type { AppNotification } from '../../types/notification'
+import { formatDate, formatTime } from '../../utils/format'
 
 interface NotificationItemProps {
   notification: AppNotification
@@ -11,6 +13,7 @@ interface NotificationItemProps {
 }
 
 export function NotificationItem({ notification, read, onMarkRead, onMarkUnread }: NotificationItemProps) {
+  const { timeFormat, dateFormat } = useFormatPreferences()
   const isLate = notification.type === 'Late Student'
   const Icon = isLate ? TriangleAlert : CircleCheck
   const iconStyle = isLate
@@ -48,8 +51,8 @@ export function NotificationItem({ notification, read, onMarkRead, onMarkUnread 
         </div>
 
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-slate-400">
-          <span className="inline-flex items-center gap-1"><CalendarDays size={12} />{notification.dateLabel}</span>
-          <span className="inline-flex items-center gap-1"><Clock size={12} />{notification.time}</span>
+          <span className="inline-flex items-center gap-1"><CalendarDays size={12} />{formatDate(notification.date, dateFormat)}</span>
+          <span className="inline-flex items-center gap-1"><Clock size={12} />{formatTime(notification.time, timeFormat)}</span>
           {notification.method && (
             <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">Method: {notification.method}</span>
           )}

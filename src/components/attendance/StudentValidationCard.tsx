@@ -1,5 +1,7 @@
 import { AlertCircle, CircleCheck, CircleX, Clock3, LoaderCircle, ScanLine } from 'lucide-react'
+import { useFormatPreferences } from '../../hooks/useFormatting'
 import type { AttendanceValidationResult } from '../../types/attendance'
+import { formatTime } from '../../utils/format'
 
 interface StudentValidationCardProps {
   result: AttendanceValidationResult | null
@@ -7,6 +9,7 @@ interface StudentValidationCardProps {
 }
 
 export function StudentValidationCard({ result, busy }: StudentValidationCardProps) {
+  const { timeFormat } = useFormatPreferences()
   let content
 
   if (result?.outcome === 'success') {
@@ -70,7 +73,7 @@ export function StudentValidationCard({ result, busy }: StudentValidationCardPro
         <div className="mt-3 rounded-xl bg-slate-50 p-3 text-left text-xs dark:bg-slate-950/60">
           <p className="font-semibold text-slate-700 dark:text-slate-200">{previous.student.name}</p>
           <p className="mt-1.5 flex items-center justify-between text-slate-500 dark:text-slate-400">
-            <span>Previous time</span><span className="font-semibold text-slate-600 dark:text-slate-300">{previous.time}</span>
+            <span>Previous time</span><span className="font-semibold text-slate-600 dark:text-slate-300">{formatTime(previous.time, timeFormat)}</span>
           </p>
           <p className="mt-1 flex items-center justify-between text-slate-500 dark:text-slate-400">
             <span>Method</span><span className="font-semibold text-slate-600 dark:text-slate-300">{previous.method}</span>

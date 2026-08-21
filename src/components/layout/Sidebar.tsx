@@ -22,6 +22,7 @@ import { useMemo, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
 import { useNotificationsUnreadCount } from '../../hooks/useNotificationsUnreadCount'
+import { useSystemSettings } from '../../hooks/useSystemSettings'
 import { hasPermission } from '../../services/roleService'
 import { useAuthStore } from '../../stores/authStore'
 import { useRoleStore } from '../../stores/roleStore'
@@ -141,6 +142,9 @@ export function Sidebar({
   const permissionRevision = useRoleStore(
     (state) => state.permissionRevision,
   )
+  const { schoolInformation } = useSystemSettings()
+  const schoolName = schoolInformation.schoolName || 'Attendly'
+  const schoolLogo = schoolInformation.logoUrl
 
   const { visiblePrimaryLinks, canViewSettings } = useMemo(
     () => ({
@@ -186,19 +190,19 @@ export function Sidebar({
           <NavLink
             to="/dashboard"
             className="flex items-center gap-3 overflow-hidden"
-            aria-label="Attendly dashboard"
+            aria-label={`${schoolName} dashboard`}
             onClick={onClose}
           >
-            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
-              <GraduationCap size={21} strokeWidth={2.3} />
+            <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
+              {schoolLogo ? <img src={schoolLogo} alt="" className="size-full object-cover" /> : <GraduationCap size={21} strokeWidth={2.3} />}
             </span>
 
             <span
-              className={`whitespace-nowrap text-lg font-bold tracking-tight text-slate-900 dark:text-white ${
+              className={`truncate whitespace-nowrap text-lg font-bold tracking-tight text-slate-900 dark:text-white ${
                 compact ? 'lg:hidden' : ''
               }`}
             >
-              Attendly
+              {schoolName}
             </span>
           </NavLink>
 
