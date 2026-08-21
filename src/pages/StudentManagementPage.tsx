@@ -38,7 +38,7 @@ export function StudentManagementPage() {
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const { data: students = [], isPending, isError } = useQuery({ queryKey: ['students'], queryFn: studentService.list, staleTime: Infinity })
-  const refresh = async () => { await queryClient.invalidateQueries({ queryKey: ['students'] }) }
+  const refresh = async () => { await Promise.all([ queryClient.invalidateQueries({ queryKey: ['students'] }), queryClient.invalidateQueries({ queryKey: ['dashboard'] }), queryClient.invalidateQueries({ queryKey: ['qr-codes'] }), queryClient.invalidateQueries({ queryKey: ['rfid-cards'] }), ]) }
   const saveMutation = useMutation({ mutationFn: async ({ student, values }: { student?: Student; values: StudentFormValues }) => student ? studentService.update(student.id, values) : studentService.create(values), onSuccess: async (_, variables) => { await refresh(); setNotice(variables.student ? 'Student information updated successfully.' : 'Student registered and activated successfully.') } })
   const statusMutation = useMutation({ mutationFn: ({ ids, status }: { ids: string[]; status: StudentStatus }) => studentService.setStatus(ids, status), onSuccess: async (_, variables) => { await refresh(); setSelectedIds([]); setProfile(undefined); setNotice(`${variables.ids.length} student${variables.ids.length === 1 ? '' : 's'} ${variables.status === 'Archived' ? 'archived' : `set to ${variables.status.toLowerCase()}`} successfully.`) } })
   const filteredStudents = useMemo(() => {

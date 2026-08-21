@@ -78,7 +78,7 @@ export function AssignRFIDModal({ open, card, students, unavailableStudentIds, s
             ) : (
               <ul className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filtered.map((student) => {
-                  const unavailable = unavailableStudentIds.has(student.id)
+                  const unavailable = unavailableStudentIds.has(student.studentId) || unavailableStudentIds.has(student.id)
                   const isSelected = selected?.id === student.id
                   return (
                     <li key={student.id}>
