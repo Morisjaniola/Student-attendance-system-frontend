@@ -1,3 +1,4 @@
+import type { AttendanceRecord } from './attendance'
 import type { AttendanceTrendPoint } from './dashboard'
 
 /**
@@ -27,6 +28,9 @@ export const EMPTY_ANALYTICS_FILTERS: AnalyticsFilters = {
   section: 'All',
 }
 
+/** Quick date range presets for the Present vs Absent card. */
+export type DatePreset = 'Today' | 'This Week' | 'This Month' | 'Custom'
+
 /** Counts per attendance status (requirement 8.1). */
 export interface AttendanceStatistics {
   total: number
@@ -40,6 +44,30 @@ export interface AttendanceStatistics {
 export interface PresentAbsentComparison {
   present: number
   absent: number
+}
+
+/** Enhanced comparison detail with percentages and period comparison. */
+export interface PresentAbsentDetail {
+  present: number
+  absent: number
+  presentPercentage: number
+  absentPercentage: number
+  total: number
+  /** Previous period change for present (percentage points). */
+  presentDelta: number | null
+  /** Previous period change for absent (percentage points). */
+  absentDelta: number | null
+}
+
+/** Attendance health levels. */
+export type AttendanceHealthLevel = 'Good' | 'Needs Attention' | 'Critical'
+
+/** Attendance health indicator. */
+export interface AttendanceHealth {
+  level: AttendanceHealthLevel
+  percentage: number
+  /** Human-readable description of the health level. */
+  description: string
 }
 
 /** Late attendance analysis (requirement 8.4) — based on records, not unique students. */
@@ -65,6 +93,10 @@ export interface AnalyticsData {
   /** Daily Present/Absent/Late counts, oldest first (requirement 8.2). */
   trend: AttendanceTrendPoint[]
   comparison: PresentAbsentComparison
+  /** Enhanced present vs absent detail with percentages and deltas. */
+  comparisonDetail: PresentAbsentDetail
+  /** Attendance health indicator. */
+  health: AttendanceHealth
   late: LateAttendanceAnalysis
   percentage: AttendancePercentage
   /** Number of distinct school days in the filtered set. */
@@ -73,4 +105,6 @@ export interface AnalyticsData {
   courses: string[]
   /** Section labels available in the dataset (unfiltered) — for filter options. */
   sections: string[]
+  /** Filtered attendance records for drill-down and export. */
+  records: AttendanceRecord[]
 }

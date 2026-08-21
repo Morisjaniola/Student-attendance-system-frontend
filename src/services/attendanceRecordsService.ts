@@ -30,8 +30,8 @@ export interface AttendanceRecordUpdate {
   method: AttendanceMethod
 }
 
-// In-memory history, seeded from mock data. Live records created by Attendance
-// Monitoring (5.) are merged in at read time so the two modules stay connected.
+// In-memory history, seeded from mock data. Live records created by Live
+// Scanning are merged in at read time so the modules stay connected.
 let records: AttendanceRecord[] = seedAttendanceRecords()
 const deletedIds = new Set<string>()
 
@@ -127,7 +127,7 @@ function validatePatch(patch: AttendanceRecordUpdate): string | null {
 }
 
 export const attendanceRecordsService = {
-  /** All history: seeded records plus live records from Attendance Monitoring. */
+  /** All history: seeded records plus live records from Live Scanning. */
   async list(): Promise<AttendanceRecord[]> {
     await delay()
     const merged = [...records]

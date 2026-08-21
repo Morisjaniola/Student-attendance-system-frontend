@@ -1,6 +1,7 @@
 import { LoaderCircle, Pencil, Trash2 } from 'lucide-react'
+import { useFormatPreferences } from '../../hooks/useFormatting'
 import type { AttendanceRecord } from '../../types/attendanceRecord'
-import { initials } from '../../utils/format'
+import { formatDate, formatTime, initials } from '../../utils/format'
 import { AttendanceMethodBadge, AttendanceStatusBadge } from './AttendanceBadges'
 
 interface AttendanceRecordCardProps {
@@ -13,6 +14,7 @@ interface AttendanceRecordCardProps {
 }
 
 export function AttendanceRecordCard({ record, canEdit, canDelete, busy, onEdit, onDelete }: AttendanceRecordCardProps) {
+  const { timeFormat, dateFormat } = useFormatPreferences()
   return (
     <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-start justify-between gap-3">
@@ -32,11 +34,11 @@ export function AttendanceRecordCard({ record, canEdit, canDelete, busy, onEdit,
       <div className="mt-3 grid grid-cols-3 gap-2 rounded-xl bg-slate-50 p-3 text-center dark:bg-slate-950/60">
         <div>
           <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Date</p>
-          <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600 dark:text-slate-300">{record.dateLabel}</p>
+          <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-600 dark:text-slate-300">{formatDate(record.date, dateFormat)}</p>
         </div>
         <div>
           <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Time</p>
-          <p className="mt-0.5 font-mono text-[11px] font-semibold text-slate-600 dark:text-slate-300">{record.time}</p>
+          <p className="mt-0.5 font-mono text-[11px] font-semibold text-slate-600 dark:text-slate-300">{formatTime(record.time, timeFormat)}</p>
         </div>
         <div>
           <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Method</p>

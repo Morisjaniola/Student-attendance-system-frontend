@@ -7,5 +7,20 @@ const viewPermissions = (modules: Permission['module'][]) => modules.map((module
 export const mockRoles: SystemRole[] = [
   { id: 'ROLE-001', name: 'Administrator', description: 'Full system administration and configuration access.', status: 'Active', isSystem: true, permissions: allPermissions },
   { id: 'ROLE-002', name: 'Faculty', description: 'Access to student and attendance operations assigned to faculty.', status: 'Active', isSystem: true, permissions: viewPermissions(['Dashboard', 'Student Management', 'Attendance Monitoring', 'Attendance Records', 'Analytics', 'Notifications']) },
-  { id: 'ROLE-003', name: 'Staff', description: 'Access to day-to-day attendance and student support operations.', status: 'Active', isSystem: true, permissions: viewPermissions(['Dashboard', 'Student Management', 'Attendance Monitoring', 'Attendance Records', 'Notifications']) },
+  {
+    id: 'ROLE-003',
+    name: 'Staff',
+    description: 'Access to day-to-day attendance, credential, and student support operations.',
+    status: 'Active',
+    isSystem: true,
+    permissions: [
+      ...viewPermissions(['Dashboard', 'Student Management', 'QR Code Management', 'RFID Management', 'Attendance Monitoring', 'Attendance Records', 'Analytics', 'Notifications']),
+      { module: 'QR Code Management', action: 'Create' },
+      { module: 'QR Code Management', action: 'Update' },
+      { module: 'RFID Management', action: 'Create' },
+      { module: 'RFID Management', action: 'Update' },
+      { module: 'Attendance Monitoring', action: 'Create' },
+      { module: 'Notifications', action: 'Update' },
+    ],
+  },
 ]

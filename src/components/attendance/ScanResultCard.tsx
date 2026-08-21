@@ -1,12 +1,14 @@
 import { CalendarDays, Clock3, ScanLine } from 'lucide-react'
+import { useFormatPreferences } from '../../hooks/useFormatting'
 import type { AttendanceRecord } from '../../types/attendance'
-import { statusStyles } from '../../utils/format'
+import { formatDate, formatTime, statusStyles } from '../../utils/format'
 
 interface ScanResultCardProps {
   record: AttendanceRecord | null
 }
 
 export function ScanResultCard({ record }: ScanResultCardProps) {
+  const { timeFormat, dateFormat } = useFormatPreferences()
   if (!record) return null
 
   return (
@@ -24,11 +26,11 @@ export function ScanResultCard({ record }: ScanResultCardProps) {
         </div>
         <div>
           <dt className="flex items-center gap-1 text-[10px] text-emerald-700/70 dark:text-emerald-300/70"><Clock3 size={11} />Time</dt>
-          <dd className="mt-0.5 font-semibold text-emerald-900 dark:text-emerald-100">{record.time}</dd>
+          <dd className="mt-0.5 font-semibold text-emerald-900 dark:text-emerald-100">{formatTime(record.time, timeFormat)}</dd>
         </div>
         <div className="col-span-2">
           <dt className="flex items-center gap-1 text-[10px] text-emerald-700/70 dark:text-emerald-300/70"><CalendarDays size={11} />Date</dt>
-          <dd className="mt-0.5 font-semibold text-emerald-900 dark:text-emerald-100">{record.dateLabel}</dd>
+          <dd className="mt-0.5 font-semibold text-emerald-900 dark:text-emerald-100">{formatDate(record.date, dateFormat)}</dd>
         </div>
       </dl>
     </section>

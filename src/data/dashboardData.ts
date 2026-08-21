@@ -5,113 +5,51 @@ import {
   GraduationCap,
   UserRoundCheck,
 } from 'lucide-react'
-import type { DashboardData } from '../types/dashboard'
+import { studentService } from '../services/studentService'
+import { qrCodeService } from '../services/qrCodeService'
+import { rfidService } from '../services/rfidService'
+import { attendanceRecordsService } from '../services/attendanceRecordsService'
+import type { AttendanceTrendPoint, CourseAttendance, DashboardData, ScanMetric, StatMetric } from '../types/dashboard'
 
-const dates = [
-  'Jul 09', 'Jul 10', 'Jul 11', 'Jul 14', 'Jul 15', 'Jul 16', 'Jul 17', 'Jul 18', 'Jul 21', 'Jul 22',
-  'Jul 23', 'Jul 24', 'Jul 25', 'Jul 28', 'Jul 29', 'Jul 30', 'Jul 31', 'Aug 01', 'Aug 04', 'Aug 05',
-  'Aug 06', 'Aug 07', 'Aug 08', 'Aug 11', 'Aug 12', 'Aug 13', 'Aug 14', 'Aug 15', 'Aug 18', 'Aug 19',
-]
+// ---------------------------------------------------------------------------
+// Events and announcements – kept as static data since no dedicated services
+// exist for them. These represent school-level information that doesn't
+// change with individual attendance records.
+// ---------------------------------------------------------------------------
 
 export const dashboardData: DashboardData = {
-  attendanceStats: [
-    {
-      id: 'students',
-      title: 'Total Students',
-      value: '1,248',
-      description: 'Registered this semester',
-      change: '4.6%',
-      trend: 'up',
-      color: 'blue',
-      icon: GraduationCap,
-    },
-    {
-      id: 'present',
-      title: 'Present Today',
-      value: '1,116',
-      description: '89.4% of enrolled students',
-      change: '3.2%',
-      trend: 'up',
-      color: 'green',
-      icon: BadgeCheck,
-    },
-    {
-      id: 'absent',
-      title: 'Absent Today',
-      value: '58',
-      description: '4.6% of enrolled students',
-      change: '0.8%',
-      trend: 'down',
-      color: 'red',
-      icon: CircleX,
-    },
-    {
-      id: 'late',
-      title: 'Late Today',
-      value: '43',
-      description: 'Arrived after 8:00 AM',
-      change: '1.4%',
-      trend: 'down',
-      color: 'orange',
-      icon: Clock3,
-    },
-    {
-      id: 'excused',
-      title: 'Excused Today',
-      value: '31',
-      description: 'Approved attendance requests',
-      change: '2.1%',
-      trend: 'up',
-      color: 'violet',
-      icon: UserRoundCheck,
-    },
-  ],
-  studentStats: { total: 1248, active: 1193, inactive: 55 },
-  qr: { total: 892, successful: 871, failed: 21, successRate: 97.6 },
-  rfid: { total: 308, successful: 302, failed: 6, successRate: 98.1, lastScan: '10:42 AM' },
-  activities: [
-    { id: 'a-01', studentId: '2024-01248', name: 'Maria S. Reyes', initials: 'MR', avatarColor: 'bg-blue-100 text-blue-700', course: 'BS Computer Science', year: '3rd Year', section: 'CS-3A', method: 'QR Code', timeIn: '10:42 AM', status: 'Present', device: 'Gate A Scanner' },
-    { id: 'a-02', studentId: '2024-01183', name: 'John Paulo Cruz', initials: 'JC', avatarColor: 'bg-amber-100 text-amber-700', course: 'BS Information Tech.', year: '2nd Year', section: 'IT-2B', method: 'RFID', timeIn: '10:39 AM', status: 'Present', device: 'Main Entrance' },
-    { id: 'a-03', studentId: '2024-00916', name: 'Angela D. Santos', initials: 'AS', avatarColor: 'bg-pink-100 text-pink-700', course: 'BS Accountancy', year: '4th Year', section: 'BSA-4A', method: 'QR Code', timeIn: '10:31 AM', status: 'Late', device: 'Gate A Scanner' },
-    { id: 'a-04', studentId: '2024-00851', name: 'Jericho M. Tan', initials: 'JT', avatarColor: 'bg-violet-100 text-violet-700', course: 'BS Computer Science', year: '1st Year', section: 'CS-1C', method: 'RFID', timeIn: '10:28 AM', status: 'Present', device: 'Library Reader' },
-    { id: 'a-05', studentId: '2024-01042', name: 'Kyla Mae Garcia', initials: 'KG', avatarColor: 'bg-cyan-100 text-cyan-700', course: 'BS Psychology', year: '3rd Year', section: 'PSY-3A', method: 'QR Code', timeIn: '10:21 AM', status: 'Excused', device: 'Student Services' },
-    { id: 'a-06', studentId: '2024-00738', name: 'Rafael L. Mendoza', initials: 'RM', avatarColor: 'bg-orange-100 text-orange-700', course: 'BS Information Tech.', year: '4th Year', section: 'IT-4A', method: 'RFID', timeIn: '10:17 AM', status: 'Present', device: 'Main Entrance' },
-    { id: 'a-07', studentId: '2024-01301', name: 'Sofia N. Villanueva', initials: 'SV', avatarColor: 'bg-rose-100 text-rose-700', course: 'BS Nursing', year: '2nd Year', section: 'NUR-2B', method: 'QR Code', timeIn: '10:04 AM', status: 'Late', device: 'Gate B Scanner' },
-    { id: 'a-08', studentId: '2024-00626', name: 'Miguel A. Torres', initials: 'MT', avatarColor: 'bg-emerald-100 text-emerald-700', course: 'BS Computer Science', year: '2nd Year', section: 'CS-2A', method: 'RFID', timeIn: '9:58 AM', status: 'Present', device: 'Main Entrance' },
-    { id: 'a-09', studentId: '2024-00964', name: 'Beatriz R. Lim', initials: 'BL', avatarColor: 'bg-indigo-100 text-indigo-700', course: 'BS Accountancy', year: '1st Year', section: 'BSA-1B', method: 'QR Code', timeIn: '9:45 AM', status: 'Present', device: 'Gate A Scanner' },
-    { id: 'a-10', studentId: '2024-01090', name: 'Noel P. Aquino', initials: 'NA', avatarColor: 'bg-slate-200 text-slate-700', course: 'BS Psychology', year: '4th Year', section: 'PSY-4A', method: 'RFID', timeIn: '9:36 AM', status: 'Absent', device: 'Adviser record' },
-  ],
-  trend: dates.map((date, index) => ({
-    date,
-    present: [88, 90, 87, 91, 89, 92, 90, 86, 88, 91, 93, 90, 92, 89, 94, 91, 93, 88, 90, 92, 89, 94, 91, 93, 90, 92, 95, 93, 91, 94][index],
-    absent: [7, 5, 8, 5, 6, 4, 5, 9, 7, 5, 4, 6, 4, 7, 3, 5, 4, 8, 6, 5, 7, 3, 5, 4, 6, 4, 3, 4, 5, 3][index],
-    late: [5, 5, 5, 4, 5, 4, 5, 5, 5, 4, 3, 4, 4, 4, 3, 4, 3, 4, 4, 3, 4, 3, 4, 3, 4, 4, 2, 3, 4, 3][index],
-  })),
-  distribution: [
-    { name: 'Present', value: 1116, color: '#22c55e' },
-    { name: 'Absent', value: 58, color: '#ef4444' },
-    { name: 'Late', value: 43, color: '#f59e0b' },
-    { name: 'Excused', value: 31, color: '#2563eb' },
-  ],
-  courseAttendance: [
-    { course: 'BSCS', rate: 94, students: 312 },
-    { course: 'BSIT', rate: 91, students: 286 },
-    { course: 'BSA', rate: 88, students: 204 },
-    { course: 'BSN', rate: 86, students: 179 },
-    { course: 'BS Psych', rate: 89, students: 167 },
-  ],
+  attendanceStats: [],
+  studentStats: { total: 0, active: 0, inactive: 0 },
+  qr: { total: 0, successful: 0, failed: 0, successRate: 0 },
+  rfid: { total: 0, successful: 0, failed: 0, successRate: 0, lastScan: '—' },
+  activities: [],
+  trend: [],
+  distribution: [],
+  courseAttendance: [],
   events: [
-    { id: 'e-01', type: 'Seminar', title: 'Career Readiness Seminar', date: 'August 22, 2026', time: '1:00 PM – 4:00 PM', location: 'University Auditorium', countdown: 'in 2 days' },
-    { id: 'e-02', type: 'Holiday', title: 'National Heroes Day', date: 'August 31, 2026', time: 'All day', location: 'Campus-wide', countdown: 'in 11 days' },
-    { id: 'e-03', type: 'Examination', title: 'Preliminary Examinations', date: 'September 7–11, 2026', time: 'Per class schedule', location: 'Assigned rooms', countdown: 'in 18 days' },
-    { id: 'e-04', type: 'Event', title: 'College Week Opening', date: 'September 14, 2026', time: '8:00 AM', location: 'Activity Center', countdown: 'in 25 days' },
+    { id: 'e-01', type: 'Seminar', title: 'Career Readiness Seminar', date: 'August 22, 2026', time: '1:00 PM – 4:00 PM', location: 'University Auditorium', countdown: 'in 2 days', purpose: 'Prepare students for future employment through career guidance, resume preparation, interview skills, professional communication, and workplace readiness.', status: 'Upcoming', details: [
+      { label: 'Registered Attendees', value: '320' },
+      { label: 'Checked-in Students', value: '0' },
+      { label: 'Attendance Completion', value: 'Pending' },
+    ] },
+    { id: 'e-02', type: 'Holiday', title: 'National Heroes Day', date: 'August 31, 2026', time: 'All day', location: 'Campus-wide', countdown: 'in 11 days', purpose: 'Honor Philippine national heroes and promote patriotism, historical awareness, and appreciation of their contributions.', status: 'Holiday – No Regular Classes', details: [
+      { label: 'Holiday Status', value: 'Official School Holiday' },
+      { label: 'Attendance Requirement', value: 'None — no regular class attendance unless an official school activity is scheduled' },
+    ] },
+    { id: 'e-03', type: 'Examination', title: 'Preliminary Examinations', date: 'September 7–11, 2026', time: 'Per class schedule', location: 'Assigned rooms', countdown: 'in 18 days', purpose: 'Conduct the official preliminary examinations to evaluate students\' academic progress during the first grading period.', status: 'Upcoming', details: [
+      { label: 'Present', value: '—' },
+      { label: 'Late', value: '—' },
+      { label: 'Absent', value: '—' },
+      { label: 'Excused', value: '—' },
+      { label: 'Total Students', value: '1,248' },
+    ] },
+    { id: 'e-04', type: 'Event', title: 'College Week Opening', date: 'September 14, 2026', time: '8:00 AM', location: 'Activity Center', countdown: 'in 25 days', purpose: 'Officially launch College Week through opening ceremonies, student activities, performances, and organization participation.', status: 'Upcoming', details: [
+      { label: 'Participant Attendance', value: '0 / 1,248' },
+      { label: 'Organization Participation', value: 'Pending' },
+      { label: 'Event Check-in Records', value: '0' },
+    ] },
   ],
-  notifications: [
-    { id: 'n-01', type: 'late', title: 'Late student detected', description: 'Angela Santos checked in 31 minutes after class start.', time: '3 min ago', unread: true },
-    { id: 'n-02', type: 'failed', title: 'QR scan failed', description: 'Invalid QR code at Gate B Scanner. Please retry.', time: '12 min ago', unread: true },
-    { id: 'n-03', type: 'connected', title: 'RFID reader connected', description: 'Main Entrance reader is online and ready to scan.', time: '28 min ago', unread: false },
-    { id: 'n-04', type: 'recorded', title: 'Attendance recorded', description: 'Maria Reyes has been marked present via QR Code.', time: '34 min ago', unread: false },
-  ],
+  notifications: [],
   announcements: [
     { id: 'an-01', priority: 'High', title: 'Preliminary examination week reminder', date: 'Aug 19, 2026', description: 'Faculty must finalize attendance records for the preliminary period by September 5.' },
     { id: 'an-02', priority: 'Medium', title: 'New RFID reader at the library', date: 'Aug 18, 2026', description: 'Library access attendance is now captured through the new RFID station.' },
@@ -119,7 +57,280 @@ export const dashboardData: DashboardData = {
   ],
 }
 
+// ---------------------------------------------------------------------------
+// Student stats
+// ---------------------------------------------------------------------------
+
+function computeStudentStats(students: { status: string }[]) {
+  const total = students.length
+  const active = students.filter((s) => s.status === 'Active').length
+  const inactive = total - active
+  return { total, active, inactive }
+}
+
+function buildStudentStatMetrics(stats: { total: number; active: number; inactive: number }): StatMetric {
+  return {
+    id: 'students',
+    title: 'Total Students',
+    value: stats.total.toLocaleString(),
+    description: 'Registered this semester',
+    change: '',
+    trend: 'up',
+    color: 'blue',
+    icon: GraduationCap,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Attendance stats from records
+// ---------------------------------------------------------------------------
+
+function computeAttendanceStats(records: { status: string }[]) {
+  let present = 0
+  let absent = 0
+  let late = 0
+  let excused = 0
+  for (const record of records) {
+    if (record.status === 'Present') present++
+    else if (record.status === 'Absent') absent++
+    else if (record.status === 'Late') late++
+    else if (record.status === 'Excused') excused++
+  }
+  const total = present + absent + late + excused
+  return { total, present, absent, late, excused }
+}
+
+function buildAttendanceStatMetrics(stats: { total: number; present: number; absent: number; late: number; excused: number }) {
+  const pct = (value: number) => stats.total > 0 ? `${((value / stats.total) * 100).toFixed(1)}%` : '0%'
+  return [
+    {
+      id: 'students',
+      title: 'Total Students',
+      value: stats.total.toLocaleString(),
+      description: 'Registered this semester',
+      change: '',
+      trend: 'up' as const,
+      color: 'blue' as const,
+      icon: GraduationCap,
+    },
+    {
+      id: 'present',
+      title: 'Present Today',
+      value: stats.present.toLocaleString(),
+      description: `${pct(stats.present)} of enrolled students`,
+      change: '',
+      trend: 'up' as const,
+      color: 'green' as const,
+      icon: BadgeCheck,
+    },
+    {
+      id: 'absent',
+      title: 'Absent Today',
+      value: stats.absent.toLocaleString(),
+      description: `${pct(stats.absent)} of enrolled students`,
+      change: '',
+      trend: 'down' as const,
+      color: 'red' as const,
+      icon: CircleX,
+    },
+    {
+      id: 'late',
+      title: 'Late Today',
+      value: stats.late.toLocaleString(),
+      description: 'Arrived after 8:00 AM',
+      change: '',
+      trend: 'down' as const,
+      color: 'orange' as const,
+      icon: Clock3,
+    },
+    {
+      id: 'excused',
+      title: 'Excused Today',
+      value: stats.excused.toLocaleString(),
+      description: 'Approved attendance requests',
+      change: '',
+      trend: 'up' as const,
+      color: 'violet' as const,
+      icon: UserRoundCheck,
+    },
+  ]
+}
+
+// ---------------------------------------------------------------------------
+// QR / RFID scan metrics
+// ---------------------------------------------------------------------------
+
+function computeQRScanMetrics(qrCodes: { status: string }[]): ScanMetric {
+  const generated = qrCodes.filter((qr) => qr.status === 'Generated').length
+  const notGenerated = qrCodes.filter((qr) => qr.status === 'Not Generated').length
+  const total = qrCodes.length
+  return {
+    total,
+    successful: generated,
+    failed: notGenerated,
+    successRate: total > 0 ? Math.round((generated / total) * 1000) / 10 : 0,
+  }
+}
+
+function computeRFIDScanMetrics(rfidCards: { status: string; registeredAt: string }[]): ScanMetric & { lastScan: string } {
+  const active = rfidCards.filter((c) => c.status === 'Active').length
+  const inactive = rfidCards.filter((c) => c.status === 'Inactive').length
+  const unassigned = rfidCards.filter((c) => c.status === 'Unassigned').length
+  const total = rfidCards.length
+  // Find the most recently registered card
+  const sorted = [...rfidCards].sort((a, b) => b.registeredAt.localeCompare(a.registeredAt))
+  const lastRegistered = sorted[0]?.registeredAt ?? '—'
+  return {
+    total,
+    successful: active,
+    failed: inactive + unassigned,
+    successRate: total > 0 ? Math.round((active / total) * 1000) / 10 : 0,
+    lastScan: lastRegistered !== '—' ? new Date(lastRegistered).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—',
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Activity table (recent attendance records)
+// ---------------------------------------------------------------------------
+
+interface ActivityRecord {
+  id: string
+  student: {
+    id: string
+    studentId: string
+    name: string
+    initials: string
+    avatarColor: string
+    courseCode: string
+    course: string
+    yearLevel: string
+    section: string
+  }
+  method: string
+  time: string
+  status: string
+  date: string
+}
+
+function buildActivities(records: ActivityRecord[]) {
+  return records.slice(0, 10).map((record) => ({
+    id: record.id,
+    studentId: record.student.studentId,
+    name: record.student.name,
+    initials: record.student.initials,
+    avatarColor: record.student.avatarColor,
+    course: record.student.course,
+    year: record.student.yearLevel,
+    section: record.student.section,
+    method: record.method as 'QR Code' | 'RFID',
+    timeIn: record.time,
+    status: record.status as 'Present' | 'Late' | 'Excused' | 'Absent',
+    device: record.method === 'QR Code' ? 'QR Scanner' : 'RFID Reader',
+  }))
+}
+
+// ---------------------------------------------------------------------------
+// Trend data (daily attendance counts)
+// ---------------------------------------------------------------------------
+
+function buildTrend(records: ActivityRecord[]): AttendanceTrendPoint[] {
+  const dateMap = new Map<string, { present: number; absent: number; late: number; excused: number }>()
+  for (const record of records) {
+    const entry = dateMap.get(record.date) ?? { present: 0, absent: 0, late: 0, excused: 0 }
+    if (record.status === 'Present') entry.present++
+    else if (record.status === 'Absent') entry.absent++
+    else if (record.status === 'Late') entry.late++
+    else if (record.status === 'Excused') entry.excused++
+    dateMap.set(record.date, entry)
+  }
+
+  return [...dateMap.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, counts]) => {
+      const [year, month, day] = date.split('-').map(Number)
+      const dateLabel = new Date(year, month - 1, day).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
+      return {
+        isoDate: date,
+        date: dateLabel,
+        ...counts,
+      }
+    })
+}
+
+// ---------------------------------------------------------------------------
+// Course attendance
+// ---------------------------------------------------------------------------
+
+function buildCourseAttendance(records: ActivityRecord[]): CourseAttendance[] {
+  const courseMap = new Map<string, { total: number; present: number; late: number; absent: number }>()
+  for (const record of records) {
+    const code = record.student.courseCode
+    const entry = courseMap.get(code) ?? { total: 0, present: 0, late: 0, absent: 0 }
+    entry.total++
+    if (record.status === 'Present') entry.present++
+    else if (record.status === 'Late') entry.late++
+    else if (record.status === 'Absent') entry.absent++
+    courseMap.set(code, entry)
+  }
+
+  return [...courseMap.entries()]
+    .map(([course, data]) => ({
+      course,
+      rate: data.total > 0 ? Math.round(((data.present + data.late) / data.total) * 100) : 0,
+      students: data.total,
+      present: data.present,
+      late: data.late,
+      absent: data.absent,
+      total: data.total,
+    }))
+    .sort((a, b) => b.rate - a.rate)
+}
+
+// ---------------------------------------------------------------------------
+// Distribution (attendance status counts)
+// ---------------------------------------------------------------------------
+
+function buildDistribution(stats: { present: number; absent: number; late: number; excused: number }) {
+  return [
+    { name: 'Present' as const, value: stats.present, color: '#22c55e' },
+    { name: 'Absent' as const, value: stats.absent, color: '#ef4444' },
+    { name: 'Late' as const, value: stats.late, color: '#f59e0b' },
+    { name: 'Excused' as const, value: stats.excused, color: '#2563eb' },
+  ]
+}
+
+// ---------------------------------------------------------------------------
+// Main dashboard data builder – uses existing services
+// ---------------------------------------------------------------------------
+
 export async function getDashboardData(): Promise<DashboardData> {
-  // Mimics an API boundary so the view can be switched to real services later.
-  return Promise.resolve(dashboardData)
+  const [students, qrCodes, rfidCards, attendanceRecords] = await Promise.all([
+    studentService.list(),
+    qrCodeService.list(),
+    rfidService.list(),
+    attendanceRecordsService.list(),
+  ])
+
+  const studentStats = computeStudentStats(students)
+  const attendanceStats = computeAttendanceStats(attendanceRecords)
+  const qrMetrics = computeQRScanMetrics(qrCodes)
+  const rfidMetrics = computeRFIDScanMetrics(rfidCards)
+  const activities = buildActivities(attendanceRecords)
+  const trend = buildTrend(attendanceRecords)
+  const courseAttendance = buildCourseAttendance(attendanceRecords)
+  const distribution = buildDistribution(attendanceStats)
+
+  return {
+    attendanceStats: buildAttendanceStatMetrics(attendanceStats),
+    studentStats,
+    qr: qrMetrics,
+    rfid: rfidMetrics,
+    activities,
+    trend,
+    distribution,
+    courseAttendance,
+    events: dashboardData.events,
+    notifications: dashboardData.notifications,
+    announcements: dashboardData.announcements,
+  }
 }

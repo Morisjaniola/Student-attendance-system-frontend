@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react'
+import { useDebouncedValue } from '../../hooks/useDebouncedValue'
 import { useNavigate } from 'react-router-dom'
 import { useQueries } from '@tanstack/react-query'
 import {
@@ -189,7 +190,8 @@ export function GlobalSearch() {
   const [activeIndex, setActiveIndex] = useState(0)
 
   const trimmed = query.trim()
-  const enabled = open && trimmed.length > 0
+  const debouncedTrimmed = useDebouncedValue(trimmed, 300)
+  const enabled = open && debouncedTrimmed.length > 0
 
   const queries = useQueries({
     queries: [
@@ -208,8 +210,8 @@ export function GlobalSearch() {
   const isFetching = queries.some((result) => result.isFetching)
 
   const results = useMemo(
-    () => buildResults(trimmed, students, users, records, qrCodes, cards),
-    [trimmed, students, users, records, qrCodes, cards],
+    () => buildResults(debouncedTrimmed, students, users, records, qrCodes, cards),
+    [debouncedTrimmed, students, users, records, qrCodes, cards],
   )
 
   const grouped = useMemo(
@@ -332,9 +334,9 @@ export function GlobalSearch() {
                 <LoaderCircle size={14} className="animate-spin text-blue-500" />Searching…
               </p>
             )}
-            {!isFetching && flatResults.length === 0 && trimmed.length > 0 && (
+            {!isFetching && flatResults.length === 0 && debouncedTrimmed.length > 0 && (
               <p className="px-2.5 py-6 text-center text-xs text-slate-400">
-                No results for <span className="font-semibold text-slate-600 dark:text-slate-300">&ldquo;{trimmed}&rdquo;</span>
+                No results for <span className="font-semibold text-slate-600 dark:text-slate-300">&ldquo;{debouncedTrimmed}&rdquo;</span>
               </p>
             )}
           </div>

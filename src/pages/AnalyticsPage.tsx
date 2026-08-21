@@ -10,7 +10,7 @@ import { analyticsService, shortDateLabel } from '../services/analyticsService'
 import { useAnalyticsStore } from '../stores/analyticsStore'
 
 export function AnalyticsPage() {
-  const { filters, setFilter, reset } = useAnalyticsStore()
+  const { filters, datePreset, setFilter, setDatePreset, reset } = useAnalyticsStore()
 
   // Analytics consumes the existing attendance records (Monitoring -> Records ->
   // Analytics). The filters are part of the query key so every filter change
@@ -29,7 +29,7 @@ export function AnalyticsPage() {
     return <div className="grid min-h-[65vh] place-items-center"><div className="max-w-sm rounded-2xl border border-rose-100 bg-rose-50 p-6 text-center text-sm text-rose-700 dark:border-rose-900/50 dark:bg-rose-500/10 dark:text-rose-300"><AlertCircle className="mx-auto mb-3" />Attendance analytics could not be loaded. Please refresh and try again.</div></div>
   }
 
-  const { statistics, trend, comparison, late, percentage, days, courses, sections } = data
+  const { statistics, trend, comparisonDetail, health, late, percentage, days, courses, sections, records } = data
   const rangeChip = filters.dateFrom && filters.dateTo ? `${shortDateLabel(filters.dateFrom)} – ${shortDateLabel(filters.dateTo)}` : null
   const hasRecords = statistics.total > 0
 
@@ -75,7 +75,19 @@ export function AnalyticsPage() {
             <div className="lg:col-span-4"><AttendancePercentageCard percentage={percentage} /></div>
           </section>
           <section className="grid gap-5 lg:grid-cols-12">
-            <div className="lg:col-span-5"><AttendanceComparisonChart comparison={comparison} /></div>
+            <div className="lg:col-span-5">
+              <AttendanceComparisonChart
+                comparisonDetail={comparisonDetail}
+                health={health}
+                records={records}
+                courses={courses}
+                sections={sections}
+                datePreset={datePreset}
+                filters={filters}
+                onDatePresetChange={setDatePreset}
+                onFilterChange={setFilter}
+              />
+            </div>
             <div className="lg:col-span-7"><LateAttendanceCard analysis={late} /></div>
           </section>
         </>
