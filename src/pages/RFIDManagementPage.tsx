@@ -24,6 +24,7 @@ function toAssignStudent(student: Student): RFIDAssignStudent {
     course: student.course,
     yearLevel: student.yearLevel,
     section: student.section,
+    rfidNumber: student.rfidNumber,
   }
 }
 
@@ -39,12 +40,16 @@ export function RFIDManagementPage() {
   const MOBILE_PAGE_SIZE = 10
 
   const { data: cards = [], isPending, isError } = useQuery({ queryKey: ['rfid-cards'], queryFn: rfidService.list, staleTime: Infinity })
-  const studentsQuery = useQuery({ queryKey: ['students'], queryFn: studentService.list, staleTime: Infinity, enabled: Boolean(assignTarget) })
+  const studentsQuery = useQuery({ queryKey: ['students'], queryFn: studentService.list, staleTime: Infinity, enabled: Boolean(assignTarget) || registerOpen })
 
-  const refresh = async () => { await queryClient.invalidateQueries({ queryKey: ['rfid-cards'] }) }
+  const refresh = async () => { await Promise.all([ queryClient.invalidateQueries({ queryKey: ['rfid-cards'] }), queryClient.invalidateQueries({ queryKey: ['students'] }), queryClient.invalidateQueries({ queryKey: ['dashboard'] }), ]) }
 
   const registerMutation = useMutation({
-    mutationFn: (cardNumber: string) => rfidService.register(cardNumber),
+    mutationFn: async ({ cardNumber, student }: { cardNumber: string; student?: RFIDAssignStudent }) => {
+      const card = await rfidService.register(cardNumber)
+      if (student) await rfidService.assign(card.id, student)
+      return card
+    },
     onSuccess: async () => { await refresh(); setRegisterOpen(false); setNotice({ message: 'RFID card registered successfully.', tone: 'success' }) },
     onError: (error) => setNotice({ message: error instanceof Error ? error.message : 'Unable to register the RFID card. Please try again.', tone: 'error' }),
   })
@@ -68,7 +73,36 @@ export function RFIDManagementPage() {
   })
 
   const assignStudents = useMemo(() => studentsQuery.data?.map(toAssignStudent) ?? [], [studentsQuery.data])
-  const activeCardStudentIds = useMemo(() => new Set(cards.filter((card) => card.status === 'Active' && card.studentId).map((card) => card.studentId as string)), [cards])
+
+  const activeCardStudentIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const card of cards) {
+      if (card.status === 'Active' && card.studentId) {
+        ids.add(card.studentId)
+      }
+    }
+    return ids
+  }, [cards])
+
+  // Build a second set using internal student IDs for modal matching.
+  const activeCardInternalIds = useMemo(() => {
+    const ids = new Set<string>()
+    if (!studentsQuery.data) return ids
+    for (const card of cards) {
+      if (card.status === 'Active' && card.studentId) {
+        const student = studentsQuery.data.find((s) => s.studentId === card.studentId || s.id === card.studentId)
+        if (student) ids.add(student.id)
+      }
+    }
+    return ids
+  }, [cards, studentsQuery.data])
+
+  // Merge both sets so modal checks work regardless of which ID field is used.
+  const mergedUnavailableIds = useMemo(() => {
+    const merged = new Set(activeCardStudentIds)
+    for (const id of activeCardInternalIds) merged.add(id)
+    return merged
+  }, [activeCardStudentIds, activeCardInternalIds])
 
   const filtered = useMemo(() => {
     const search = query.trim().toLowerCase()
@@ -224,8 +258,12 @@ export function RFIDManagementPage() {
       <RegisterRFIDModal
         open={registerOpen}
         existingCardNumbers={cards.map((card) => card.cardNumber)}
+        students={assignStudents}
+        unavailableStudentIds={mergedUnavailableIds}
+        studentsLoading={studentsQuery.isPending}
+        studentsError={studentsQuery.isError}
         loading={registerMutation.isPending}
-        onConfirm={(cardNumber) => registerMutation.mutate(cardNumber)}
+        onConfirm={(cardNumber, student) => registerMutation.mutate({ cardNumber, student })}
         onCancel={() => setRegisterOpen(false)}
       />
 
@@ -233,7 +271,7 @@ export function RFIDManagementPage() {
         open={Boolean(assignTarget)}
         card={assignTarget}
         students={assignStudents}
-        unavailableStudentIds={activeCardStudentIds}
+        unavailableStudentIds={mergedUnavailableIds}
         studentsLoading={studentsQuery.isPending}
         studentsError={studentsQuery.isError}
         loading={assignMutation.isPending}

@@ -27,6 +27,8 @@ export interface RFIDAssignStudent {
   course: string
   yearLevel: string
   section: string
+  /** The student's existing RFID number from Student Management (source of truth). */
+  rfidNumber: string
 }
 
 /** A pending Activate/Deactivate request for a specific card. */
