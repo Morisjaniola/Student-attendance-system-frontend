@@ -16,6 +16,7 @@ import { UserManagementPage } from './pages/UserManagementPage'
 import { SystemSettingsPage } from './pages/SystemSettingsPage'
 import { AuditLogsPage } from './pages/AuditLogsPage'
 import { RolesPermissionsPage } from './pages/RolesPermissionsPage'
+import { AnnouncementsPage } from './pages/AnnouncementsPage'
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
       <Route path="/reports" element={<ProtectedRoute module="Reports"><DashboardLayout><ReportsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/analytics" element={<ProtectedRoute module="Analytics"><DashboardLayout><AnalyticsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute module="Notifications"><DashboardLayout><NotificationsPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/announcements" element={<ProtectedRoute module="Dashboard"><DashboardLayout><AnnouncementsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/users" element={<ProtectedRoute module="User Management"><DashboardLayout><UserManagementPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute module="System Settings"><DashboardLayout><SystemSettingsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/audit-logs" element={<ProtectedRoute module="Audit Logs"><DashboardLayout><AuditLogsPage /></DashboardLayout></ProtectedRoute>} />

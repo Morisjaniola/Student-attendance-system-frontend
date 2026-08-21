@@ -8,6 +8,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   LogOut,
+  Megaphone,
   PieChart,
   QrCode,
   ScanLine,
@@ -100,6 +101,12 @@ const primaryLinks: {
     icon: Bell,
     to: '/notifications',
     module: 'Notifications',
+  },
+  {
+    label: 'Announcements',
+    icon: Megaphone,
+    to: '/announcements',
+    module: 'Dashboard',
   },
   {
     label: 'User Management',
