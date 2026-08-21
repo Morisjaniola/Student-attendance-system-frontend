@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowUpDown, BarChart3, CalendarDays, ChevronDown, TrendingDown, TrendingUp } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { dashboardData } from '../../data/dashboardData'
 import type { AttendanceTrendPoint, CourseAttendance } from '../../types/dashboard'
 import { formatNumber } from '../../utils/format'
 
@@ -228,13 +227,9 @@ function CourseTooltip({ active, payload }: { active?: boolean; payload?: Readon
 // Main chart card.
 // ---------------------------------------------------------------------------
 
-export function BarChartCard({ data, isLoading = false }: { data: CourseAttendance[]; isLoading?: boolean }) {
+export function BarChartCard({ data, trend = [], isLoading = false }: { data: CourseAttendance[]; trend?: AttendanceTrendPoint[]; isLoading?: boolean }) {
   const [period, setPeriod] = useState<Period>('week')
   const [sort, setSort] = useState<SortMode>('highest')
-
-  // The trend is the existing dashboard data source used to derive the
-  // per-period factors; it is read directly so the card stays self-contained.
-  const trend = dashboardData.trend
 
   const displayed = useMemo<CourseDatum[]>(() => {
     const factors = periodFactors(trend)
