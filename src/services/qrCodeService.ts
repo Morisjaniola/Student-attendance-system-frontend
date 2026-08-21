@@ -1,4 +1,4 @@
-import { initialQRCodes } from '../data/qrCodeData'
+import { studentService } from './studentService'
 import type { StudentQRCode } from '../types/qrCode'
 
 // ---------------------------------------------------------------------------
@@ -10,7 +10,12 @@ import type { StudentQRCode } from '../types/qrCode'
 //   React  →  qrCodeService  →  PHP API  →  MySQL
 // ---------------------------------------------------------------------------
 
-let records: StudentQRCode[] = initialQRCodes.map((record) => ({ ...record }))
+/**
+ * QR code records keyed by student id.  Initially seeded from the static
+ * mock data, but kept in sync with the student service so that newly
+ * registered students automatically appear here.
+ */
+let records: StudentQRCode[] = []
 
 const delay = (milliseconds = 220) => new Promise<void>((resolve) => window.setTimeout(resolve, milliseconds))
 
@@ -35,6 +40,42 @@ export const qrCodeService = {
   /** Returns a snapshot of every student with their QR code state. */
   async list(): Promise<StudentQRCode[]> {
     await delay()
+
+    // Fetch the current student list from the single source of truth.
+    const students = await studentService.list()
+
+    // Index existing QR records by student id so we preserve generated state.
+    const qrByStudentId = new Map(records.map((record) => [record.id, record]))
+
+    // Build the merged list — one entry per student, preserving any QR data
+    // that was previously generated for that student.
+    const merged: StudentQRCode[] = students.map((student) => {
+      const existing = qrByStudentId.get(student.id)
+      if (existing) {
+        // Student already had a QR record — keep it and refresh display fields.
+        return { ...existing, name: `${student.firstName} ${student.middleName ? `${student.middleName[0]}. ` : ''}${student.lastName}` }
+      }
+      // Newly registered student with no QR record yet.
+      return {
+        id: student.id,
+        studentId: student.studentId,
+        name: `${student.firstName} ${student.middleName ? `${student.middleName[0]}. ` : ''}${student.lastName}`,
+        initials: `${student.firstName[0]}${student.lastName[0]}`,
+        avatarColor: student.avatarColor,
+        photo: student.photo,
+        course: student.course,
+        courseCode: student.courseCode,
+        yearLevel: student.yearLevel,
+        section: student.section,
+        status: 'Not Generated' as const,
+        qrValue: null,
+        generatedAt: null,
+      }
+    })
+
+    // Sync the internal records cache so generate/regenerate stay consistent.
+    records = merged.map((record) => ({ ...record }))
+
     return records.map((record) => ({ ...record }))
   },
 
